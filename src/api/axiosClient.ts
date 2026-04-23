@@ -1,33 +1,47 @@
+// src/api/axiosClient.ts
 import axios from 'axios';
-import type { InternalAxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
+import type { InternalAxiosRequestConfig, AxiosError, AxiosResponse } from 'axios';
 
 const axiosClient = axios.create({
-  baseURL: 'http://localhost:3000', // URL Backend của bạn
+  baseURL: 'http://localhost:3000', // ✅ đúng BE
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
+// ====================
+// REQUEST INTERCEPTOR
+// ====================
 axiosClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const token = localStorage.getItem('token');
-    if (token) {
+
+    // ❗ KHÔNG gửi token cho login/register
+    const isAuthRoute =
+      config.url?.includes('/auth/login') ||
+      config.url?.includes('/auth/register');
+
+    if (token && config.headers && !isAuthRoute) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+
     return config;
   },
   (error: AxiosError) => Promise.reject(error)
 );
 
+// ====================
+// RESPONSE INTERCEPTOR
+// ====================
 axiosClient.interceptors.response.use(
   (response: AxiosResponse) => response.data,
+
   (error: AxiosError) => {
     if (error.response?.status === 401) {
       localStorage.removeItem('token');
-      // Chuyển hướng người dùng đến trang đăng nhập
-      // Thêm vào sau khi hoàn thành chức năng đăng nhập
-      // window.location.href = '/login';
     }
+
+    // ❗ giữ nguyên error để FE đọc được message
     return Promise.reject(error);
   }
 );
