@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Fix xung đột: Ngăn Tailwind reset background của Button trong Antd */
+@layer base {
+  button,
+  [type='button'],
+  [type='reset'],
+  [type='submit'] {
+    @apply bg-transparent;
+  }
+}
+
+body {
+  background-color: #F9FAFB; 
+}
