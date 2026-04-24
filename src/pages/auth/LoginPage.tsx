@@ -9,7 +9,7 @@ import { authApi } from '../../api/auth.api';
 const LoginPage = () => {
   const navigate = useNavigate();
 
-  // 🔥 Clear token cũ khi vào trang login
+  //  Clear token cũ khi vào trang login
   useEffect(() => {
     localStorage.removeItem('token');
   }, []);
@@ -25,7 +25,7 @@ const LoginPage = () => {
 
       message.success('Đăng nhập thành công');
 
-      // 👉 chuyển sang dashboard (tạm)
+      // chuyển sang dashboard 
       navigate('/dashboard');
 
     } catch (err: any) {
