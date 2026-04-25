@@ -1,15 +1,14 @@
 // src/contexts/AuthContext.tsx
-import React, { createContext, useState, useContext, useEffect,  } from 'react';
-import { type ReactNode } from 'react';
-import { type User } from '../types/user.type';
-import { authApi } from '../api/auth.api';
+import React, { createContext, useState, useContext, useEffect } from "react";
+import { type ReactNode } from "react";
+import { type User } from "../types/user.type";
 
 // 1. Định nghĩa cấu trúc của Context
 interface AuthContextType {
   user: User | null;
   token: string | null;
   isAuthenticated: boolean;
-  isLoading: boolean; // Dùng để hiện loading lúc mới vào web
+  isLoading: boolean;
   login: (token: string, user: User) => void;
   logout: () => void;
 }
@@ -19,54 +18,57 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // 3. Tạo Provider
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
-  const [isLoading, setIsLoading] = useState<boolean>(true); // Mặc định là đang load
+  const [token, setToken] = useState<string | null>(
+    localStorage.getItem("token"),
+  );
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  // Tự động kiểm tra Token và lấy Profile khi lần đầu mở Web lên
+  // Khôi phục user từ localStorage khi mở lại web
+  const savedUser = localStorage.getItem("user");
+  const [user, setUser] = useState<User | null>(
+    savedUser ? JSON.parse(savedUser) : null,
+  );
+
+  // Tự động kiểm tra Token khi lần đầu mở web
   useEffect(() => {
-    const fetchProfile = async () => {
-      if (token) {
-        try {
-          // Gọi API /auth/profile để lấy thông tin user hiện tại
-          const userData = await authApi.getProfile();
-          setUser(userData);
-        } catch (error) {
-          console.error('Token không hợp lệ hoặc đã hết hạn');
-          logout(); // Xóa sạch nếu lỗi
-        }
-      }
-      setIsLoading(false); // Kết thúc quá trình kiểm tra
-    };
+    if (!token) {
+      setIsLoading(false);
+      return;
+    }
+    // Nếu có token nhưng không có user trong localStorage thì logout
+    if (!localStorage.getItem("user")) {
+      logout();
+    }
+    setIsLoading(false);
+  }, []);
 
-    fetchProfile();
-  }, [token]);
-
-  // Hàm xử lý Đăng nhập
-// Trong AuthContext.tsx
-
-const login = async (accessToken: string) => {
-  localStorage.setItem('token', accessToken);
-  setToken(accessToken);
-  
-  try {
-    // Ngay sau khi có token, gọi profile để lấy thông tin User đầy đủ
-    const userData = await authApi.getProfile();
+  // Hàm xử lý Đăng nhập — nhận token + user từ login response
+  const login = (accessToken: string, userData: User) => {
+    localStorage.setItem("token", accessToken);
+    localStorage.setItem("user", JSON.stringify(userData));
+    setToken(accessToken);
     setUser(userData);
-  } catch (error) {
-    logout();
-    throw error;
-  }
-};
+  };
+
   // Hàm xử lý Đăng xuất
   const logout = () => {
     setToken(null);
     setUser(null);
-    localStorage.removeItem('token');
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, isAuthenticated: !!user, isLoading, login, logout }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        token,
+        isAuthenticated: !!user && !!token,
+        isLoading,
+        login,
+        logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -76,7 +78,7 @@ const login = async (accessToken: string) => {
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth phải được sử dụng bên trong AuthProvider');
+    throw new Error("useAuth phải được sử dụng bên trong AuthProvider");
   }
   return context;
 };

@@ -1,39 +1,24 @@
 // src/pages/auth/LoginPage.tsx
-import { useEffect } from 'react';
-import { Form, Input, Button, Checkbox, message } from 'antd';
-import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
-import { useNavigate } from 'react-router-dom';
-import AuthLayout from '../../components/Auth/AuthLayout';
-import { authApi } from '../../api/auth.api';
+import { Form, Input, Button, Checkbox, message } from "antd";
+import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
+import AuthLayout from "../../components/Auth/AuthLayout";
+import { authApi } from "../../api/auth.api";
+import { useAuth } from "../../contexts/AuthContext";
 
 const LoginPage = () => {
   const navigate = useNavigate();
-
-  //  Clear token cũ khi vào trang login
-  useEffect(() => {
-    localStorage.removeItem('token');
-  }, []);
+  const { login } = useAuth();
 
   const onFinish = async (values: any) => {
     try {
       const res = await authApi.login(values);
-
-      console.log('LOGIN RES:', res);
-
-      // ✅ lưu token mới
-      localStorage.setItem('token', res.access_token);
-
-      message.success('Đăng nhập thành công');
-
-      // chuyển sang dashboard 
-      navigate('/dashboard');
-
+      login(res.accessToken, res.user);
+      message.success("Đăng nhập thành công");
+      navigate("/tasks");
     } catch (err: any) {
-      console.log('LOGIN ERROR:', err?.response?.data);
-
       message.error(
-        err?.response?.data?.message ||
-        'Email hoặc mật khẩu không đúng'
+        err?.response?.data?.message || "Email hoặc mật khẩu không đúng",
       );
     }
   };
@@ -41,13 +26,12 @@ const LoginPage = () => {
   return (
     <AuthLayout type="login">
       <Form layout="vertical" onFinish={onFinish}>
-        
         <Form.Item
           label="Email"
           name="email"
           rules={[
-            { required: true, message: 'Vui lòng nhập email' },
-            { type: 'email', message: 'Email không hợp lệ' },
+            { required: true, message: "Vui lòng nhập email" },
+            { type: "email", message: "Email không hợp lệ" },
           ]}
         >
           <Input placeholder="example.email@gmail.com" />
@@ -57,8 +41,8 @@ const LoginPage = () => {
           label="Password"
           name="password"
           rules={[
-            { required: true, message: 'Vui lòng nhập mật khẩu' },
-            { min: 8, message: 'Tối thiểu 8 ký tự' },
+            { required: true, message: "Vui lòng nhập mật khẩu" },
+            { min: 8, message: "Tối thiểu 8 ký tự" },
           ]}
         >
           <Input.Password
