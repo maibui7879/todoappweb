@@ -47,10 +47,9 @@ const TaskDetail = ({ task, dateStr, onClose }: TaskDetailProps) => {
 
   const deleteMutation = useMutation({
     mutationFn: () => {
+      // Virtual task → xóa master task (xóa toàn bộ quy tắc lặp)
       if (task.isVirtual) {
-        return taskApi.realize(task.masterId!.toString(), dateStr, {
-          isCompleted: false,
-        });
+        return taskApi.delete(task.masterId!.toString());
       }
       return taskApi.delete(task._id);
     },
@@ -75,7 +74,6 @@ const TaskDetail = ({ task, dateStr, onClose }: TaskDetailProps) => {
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-30 p-4">
       <div className="bg-white rounded-2xl shadow-xl w-[380px]">
-        {/* Header */}
         <div className="flex items-center justify-between px-5 pt-5 pb-3 border-b border-gray-100">
           <h3 className="font-bold text-gray-800">Chi tiết công việc</h3>
           <div className="flex items-center gap-2">
@@ -83,6 +81,9 @@ const TaskDetail = ({ task, dateStr, onClose }: TaskDetailProps) => {
               onClick={() => deleteMutation.mutate()}
               disabled={deleteMutation.isPending}
               className="text-gray-400 hover:text-red-500 transition-colors p-1"
+              title={
+                task.isVirtual ? "Xóa toàn bộ quy tắc lặp lại" : "Xóa task"
+              }
             >
               <Trash2 size={16} />
             </button>
@@ -96,7 +97,6 @@ const TaskDetail = ({ task, dateStr, onClose }: TaskDetailProps) => {
         </div>
 
         <div className="px-5 py-4 flex flex-col gap-3">
-          {/* Status badge */}
           <div className="flex items-center gap-2">
             <div
               className={`w-2.5 h-2.5 rounded-full ${task.isCompleted ? "bg-green-400" : "bg-orange-400"}`}
@@ -111,7 +111,12 @@ const TaskDetail = ({ task, dateStr, onClose }: TaskDetailProps) => {
             )}
           </div>
 
-          {/* Title */}
+          {task.isVirtual && (
+            <div className="bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 text-xs text-amber-700">
+              ⚠️ Xóa task này sẽ xóa <strong>toàn bộ quy tắc lặp lại</strong>
+            </div>
+          )}
+
           <div>
             <label className="text-xs text-gray-500 mb-1 block">
               Tên công việc
@@ -124,7 +129,6 @@ const TaskDetail = ({ task, dateStr, onClose }: TaskDetailProps) => {
             />
           </div>
 
-          {/* Description */}
           <div>
             <label className="text-xs text-gray-500 mb-1 block">Mô tả</label>
             <textarea
@@ -136,7 +140,6 @@ const TaskDetail = ({ task, dateStr, onClose }: TaskDetailProps) => {
             />
           </div>
 
-          {/* Date */}
           <div>
             <label className="text-xs text-gray-500 mb-1 block">
               Ngày & giờ
@@ -156,7 +159,6 @@ const TaskDetail = ({ task, dateStr, onClose }: TaskDetailProps) => {
             )}
           </div>
 
-          {/* Category */}
           {task.categoryId?.name && (
             <div className="flex items-center gap-2">
               <span className="text-xs text-gray-500">Danh mục:</span>
@@ -166,7 +168,6 @@ const TaskDetail = ({ task, dateStr, onClose }: TaskDetailProps) => {
             </div>
           )}
 
-          {/* Buttons */}
           <div className="flex gap-2 mt-1">
             <button
               onClick={onClose}

@@ -35,12 +35,19 @@ const AddTaskInput = ({
     },
   });
 
+  // Chuyển local time sang UTC+7 đúng cách
+  const toUTC7ISOString = (d: dayjs.Dayjs) => {
+    // Tạo date string dạng "YYYY-MM-DDTHH:mm:ss+07:00"
+    return d.format("YYYY-MM-DDTHH:mm:ss") + "+07:00";
+  };
+
   const handleSubmit = () => {
     if (!title.trim()) return;
-    // Nếu là task lặp lại, startDate phải là hôm nay để backend sinh virtual task ngay
     const dueDate = repeatData.isMaster
-      ? dayjs().hour(date.hour()).minute(date.minute()).second(0).toISOString()
-      : date.toISOString();
+      ? toUTC7ISOString(
+          dayjs().hour(date.hour()).minute(date.minute()).second(0),
+        )
+      : toUTC7ISOString(date);
 
     createMutation.mutate({
       title,

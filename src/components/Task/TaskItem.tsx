@@ -1,8 +1,14 @@
+// src/components/Task/TaskItem.tsx
 import { Trash2, RefreshCw } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { taskApi } from "../../api/task.api";
 import { type Task } from "../../types/task.type";
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 interface TaskItemProps {
   task: Task;
@@ -27,10 +33,9 @@ const TaskItem = ({ task, dateStr, onClick }: TaskItemProps) => {
 
   const deleteMutation = useMutation({
     mutationFn: () => {
+      // Virtual task → xóa master task (xóa toàn bộ quy tắc lặp)
       if (task.isVirtual) {
-        return taskApi.realize(task.masterId!.toString(), dateStr, {
-          isCompleted: false,
-        });
+        return taskApi.delete(task.masterId!.toString());
       }
       return taskApi.delete(task._id);
     },
@@ -42,7 +47,6 @@ const TaskItem = ({ task, dateStr, onClick }: TaskItemProps) => {
       className="bg-white rounded-xl px-3 py-2.5 flex items-start gap-2 shadow-sm group cursor-pointer"
       onClick={onClick}
     >
-      {/* Checkbox */}
       <button
         onClick={(e) => {
           e.stopPropagation();
@@ -69,19 +73,23 @@ const TaskItem = ({ task, dateStr, onClick }: TaskItemProps) => {
         </div>
       </button>
 
-      {/* Content */}
       <div className="flex-1 min-w-0">
         <p
-          className={`text-xs font-medium truncate ${task.isCompleted ? "line-through text-gray-400" : "text-gray-700"}`}
+          className={`text-xs font-bold truncate ${task.isCompleted ? "line-through text-gray-400" : "text-gray-800"}`}
         >
           {task.title}
         </p>
         {task.description && (
-          <p className="text-xs text-gray-400 truncate">{task.description}</p>
+          <p className="text-xs text-gray-400 truncate mt-0.5">
+            {task.description}
+          </p>
         )}
-        <div className="flex items-center gap-2 mt-0.5">
-          <span className="text-xs text-gray-400">
-            {dayjs(task.dueDate).local().format("HH:mm")}
+        <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+          <span className="text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full font-medium">
+            {dayjs(task.dueDate).utcOffset(7).format("DD/MM")}
+          </span>
+          <span className="text-xs text-green-600 bg-green-50 px-2 py-0.5 rounded-full font-medium">
+            {dayjs(task.dueDate).utcOffset(7).format("HH:mm")}
           </span>
           {task.isVirtual && (
             <span className="flex items-center gap-0.5 text-xs text-amber-500">
@@ -91,7 +99,6 @@ const TaskItem = ({ task, dateStr, onClick }: TaskItemProps) => {
         </div>
       </div>
 
-      {/* Delete */}
       <button
         onClick={(e) => {
           e.stopPropagation();
@@ -99,6 +106,7 @@ const TaskItem = ({ task, dateStr, onClick }: TaskItemProps) => {
         }}
         disabled={deleteMutation.isPending}
         className="opacity-0 group-hover:opacity-100 text-gray-300 hover:text-red-400 transition-all p-0.5 flex-shrink-0"
+        title={task.isVirtual ? "Xóa toàn bộ quy tắc lặp" : "Xóa task"}
       >
         <Trash2 size={11} />
       </button>
