@@ -5,6 +5,7 @@ import LoginPage from "./pages/auth/LoginPage";
 import RegisterPage from "./pages/auth/RegisterPage";
 import MainLayout from "./layouts/MainLayout";
 import TasksPage from "./pages/tasks/TasksPage";
+import StarredPage from "./pages/starred/StarredPage";
 
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -32,7 +33,7 @@ function App() {
           }
         >
           <Route path="/tasks" element={<TasksPage />} />
-          <Route path="/starred" element={<ComingSoon title="Quan trọng" />} />
+          <Route path="/starred" element={<StarredPage />} />
           <Route path="/categories" element={<ComingSoon title="Danh mục" />} />
           <Route path="/stats" element={<ComingSoon title="Thống kê" />} />
           <Route

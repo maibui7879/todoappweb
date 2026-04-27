@@ -1,6 +1,6 @@
 // src/components/Task/CalendarPopup.tsx
 import { useState, useRef, useEffect } from "react";
-import { ChevronLeft, ChevronRight, Clock, RefreshCw } from "lucide-react";
+import { ChevronLeft, ChevronRight, RefreshCw, Clock } from "lucide-react";
 import dayjs from "dayjs";
 import "dayjs/locale/vi";
 dayjs.locale("vi");
@@ -73,6 +73,7 @@ const ScrollCol = ({
   );
 };
 
+// ---- TIME PICKER POPUP ----
 const TimePickerPopup = ({
   hour,
   minute,
@@ -119,59 +120,7 @@ const TimePickerPopup = ({
   );
 };
 
-const RepeatPickerPopup = ({
-  interval,
-  unit,
-  onIntervalChange,
-  onUnitChange,
-  onCancel,
-  onSet,
-}: any) => (
-  <div
-    className="absolute left-full ml-2 top-0 bg-white rounded-2xl shadow-2xl border border-gray-100 p-4 z-50"
-    style={{ width: 200 }}
-  >
-    <p className="text-sm font-bold text-gray-800 mb-3">Lặp lại</p>
-    <div className="flex items-center gap-2 mb-3">
-      <input
-        type="number"
-        min={1}
-        max={99}
-        value={interval}
-        onChange={(e) => onIntervalChange(Number(e.target.value))}
-        className="w-14 border border-gray-200 rounded-lg px-2 py-1.5 text-sm text-center outline-none focus:border-[#8B5CF6]"
-      />
-      <div className="flex-1 flex flex-col gap-0.5">
-        {REPEAT_UNITS.map((u) => (
-          <button
-            key={u.value}
-            onClick={() => onUnitChange(u.value)}
-            className={`flex items-center gap-1.5 px-2 py-1 rounded-lg text-xs transition-all
-              ${unit === u.value ? "text-[#8B5CF6] font-semibold bg-[#EDE9FE]" : "text-gray-500 hover:text-gray-700"}`}
-          >
-            {unit === u.value ? "✓" : <span className="w-3 inline-block" />}{" "}
-            {u.label}
-          </button>
-        ))}
-      </div>
-    </div>
-    <div className="flex gap-2">
-      <button
-        onClick={onCancel}
-        className="flex-1 py-1.5 rounded-xl text-xs text-gray-500 hover:bg-gray-100 border border-gray-200"
-      >
-        Cancel
-      </button>
-      <button
-        onClick={onSet}
-        className="flex-1 py-1.5 rounded-xl text-xs bg-[#8B5CF6] text-white hover:bg-[#7C3AED]"
-      >
-        Set
-      </button>
-    </div>
-  </div>
-);
-
+// ---- MINI CALENDAR (reusable) ----
 const MiniCalendar = ({
   value,
   onChange,
@@ -240,10 +189,143 @@ const MiniCalendar = ({
   );
 };
 
+// ---- REPEAT PICKER POPUP ----
+const RepeatPickerPopup = ({
+  interval,
+  unit,
+  endType,
+  endDate,
+  onIntervalChange,
+  onUnitChange,
+  onEndTypeChange,
+  onEndDateChange,
+  onCancel,
+  onSet,
+}: any) => {
+  const [showEndCalendar, setShowEndCalendar] = useState(false);
+  const endDateDayjs = dayjs(endDate);
+
+  return (
+    <div
+      className="absolute left-full ml-2 top-0 bg-white rounded-2xl shadow-2xl border border-gray-100 p-4 z-50"
+      style={{ width: 240 }}
+    >
+      <p className="text-sm font-bold text-gray-800 mb-3">Lặp lại</p>
+
+      {/* Interval + Unit */}
+      <div className="flex items-center gap-2 mb-3">
+        <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden">
+          <button
+            onClick={() => onIntervalChange(Math.max(1, interval - 1))}
+            className="px-2 py-1.5 text-gray-500 hover:bg-gray-100 text-sm"
+          >
+            −
+          </button>
+          <span className="px-3 py-1.5 text-sm font-medium min-w-[32px] text-center">
+            {interval}
+          </span>
+          <button
+            onClick={() => onIntervalChange(Math.min(99, interval + 1))}
+            className="px-2 py-1.5 text-gray-500 hover:bg-gray-100 text-sm"
+          >
+            +
+          </button>
+        </div>
+        <select
+          value={unit}
+          onChange={(e) => onUnitChange(e.target.value)}
+          className="flex-1 border border-gray-200 rounded-lg px-2 py-1.5 text-sm outline-none focus:border-[#8B5CF6] bg-white"
+        >
+          {REPEAT_UNITS.map((u) => (
+            <option key={u.value} value={u.value}>
+              {u.label}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Kết thúc */}
+      <div className="mb-3">
+        <p className="text-xs font-medium text-gray-600 mb-2">Kết thúc</p>
+        <div className="flex flex-col gap-2">
+          {/* Never */}
+          <label className="flex items-center gap-2 cursor-pointer group">
+            <div
+              className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all flex-shrink-0
+              ${endType === "never" ? "border-[#8B5CF6] bg-[#8B5CF6]" : "border-gray-300 group-hover:border-[#8B5CF6]"}`}
+              onClick={() => {
+                onEndTypeChange("never");
+                setShowEndCalendar(false);
+              }}
+            >
+              {endType === "never" && (
+                <div className="w-1.5 h-1.5 rounded-full bg-white" />
+              )}
+            </div>
+            <span className="text-xs text-gray-700">Không bao giờ</span>
+          </label>
+
+          {/* On date */}
+          <label className="flex items-center gap-2 cursor-pointer group">
+            <div
+              className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all flex-shrink-0
+              ${endType === "date" ? "border-[#8B5CF6] bg-[#8B5CF6]" : "border-gray-300 group-hover:border-[#8B5CF6]"}`}
+              onClick={() => onEndTypeChange("date")}
+            >
+              {endType === "date" && (
+                <div className="w-1.5 h-1.5 rounded-full bg-white" />
+              )}
+            </div>
+            <span className="text-xs text-gray-700 flex-shrink-0">Vào</span>
+            {endType === "date" && (
+              <button
+                onClick={() => setShowEndCalendar((v) => !v)}
+                className={`flex-1 text-xs px-2 py-1 rounded-lg border transition-colors text-left font-medium
+                  ${showEndCalendar ? "border-[#8B5CF6] bg-[#EDE9FE] text-[#8B5CF6]" : "border-gray-200 text-gray-700 hover:border-[#8B5CF6]"}`}
+              >
+                {endDateDayjs.format("DD/MM/YYYY")}
+              </button>
+            )}
+          </label>
+        </div>
+
+        {/* End date calendar */}
+        {endType === "date" && showEndCalendar && (
+          <div className="mt-2 border border-[#EDE9FE] rounded-xl p-3 bg-white shadow-sm">
+            <MiniCalendar
+              value={endDateDayjs}
+              onChange={(d) => {
+                onEndDateChange(d.format("YYYY-MM-DD"));
+                setShowEndCalendar(false);
+              }}
+            />
+          </div>
+        )}
+      </div>
+
+      <div className="flex gap-2">
+        <button
+          onClick={onCancel}
+          className="flex-1 py-1.5 rounded-xl text-xs text-gray-500 hover:bg-gray-100 border border-gray-200"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={onSet}
+          className="flex-1 py-1.5 rounded-xl text-xs bg-[#8B5CF6] text-white hover:bg-[#7C3AED]"
+        >
+          Set
+        </button>
+      </div>
+    </div>
+  );
+};
+
 export interface RepeatData {
   isMaster: boolean;
   repeatUnit: string;
   repeatInterval: number;
+  endDate?: string;
 }
 
 interface CalendarPopupProps {
@@ -269,10 +351,16 @@ const CalendarPopup = ({
   const [showTime, setShowTime] = useState(false);
   const [showRepeat, setShowRepeat] = useState(false);
   const [repeatInterval, setRepeatInterval] = useState(
-    repeatData.repeatInterval,
+    repeatData.repeatInterval || 1,
   );
   const [repeatUnit, setRepeatUnit] = useState(
     repeatData.repeatUnit === "NONE" ? "DAILY" : repeatData.repeatUnit,
+  );
+  const [endType, setEndType] = useState<"never" | "date">(
+    repeatData.endDate ? "date" : "never",
+  );
+  const [endDate, setEndDate] = useState(
+    repeatData.endDate || dayjs().add(1, "month").format("YYYY-MM-DD"),
   );
 
   const handleTimeSet = () => {
@@ -284,12 +372,22 @@ const CalendarPopup = ({
   };
 
   const handleRepeatSet = () => {
-    onRepeatChange({ isMaster: true, repeatUnit, repeatInterval });
+    onRepeatChange({
+      isMaster: true,
+      repeatUnit,
+      repeatInterval,
+      endDate: endType === "date" ? endDate : undefined,
+    });
     setShowRepeat(false);
   };
 
   const handleRepeatCancel = () => {
-    onRepeatChange({ isMaster: false, repeatUnit: "NONE", repeatInterval: 1 });
+    onRepeatChange({
+      isMaster: false,
+      repeatUnit: "NONE",
+      repeatInterval: 1,
+      endDate: undefined,
+    });
     setShowRepeat(false);
   };
 
@@ -315,6 +413,7 @@ const CalendarPopup = ({
             }
           />
           <div className="border-t border-gray-100 mt-3 pt-3 flex flex-col gap-1">
+            {/* Time picker */}
             <div className="relative">
               <button
                 onClick={() => {
@@ -339,6 +438,7 @@ const CalendarPopup = ({
                 />
               )}
             </div>
+            {/* Repeat picker */}
             <div className="relative">
               <button
                 onClick={() => {
@@ -354,8 +454,12 @@ const CalendarPopup = ({
                 <RepeatPickerPopup
                   interval={repeatInterval}
                   unit={repeatUnit}
+                  endType={endType}
+                  endDate={endDate}
                   onIntervalChange={setRepeatInterval}
                   onUnitChange={setRepeatUnit}
+                  onEndTypeChange={setEndType}
+                  onEndDateChange={setEndDate}
                   onCancel={handleRepeatCancel}
                   onSet={handleRepeatSet}
                 />

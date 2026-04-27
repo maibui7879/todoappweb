@@ -1,5 +1,5 @@
 // src/components/Task/TaskItem.tsx
-import { Trash2, RefreshCw } from "lucide-react";
+import { Trash2, RefreshCw, Star } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { taskApi } from "../../api/task.api";
 import { type Task } from "../../types/task.type";
@@ -31,12 +31,17 @@ const TaskItem = ({ task, dateStr, onClick }: TaskItemProps) => {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["tasks"] }),
   });
 
+  const starMutation = useMutation({
+    mutationFn: () => {
+      const id = task.isVirtual ? task.masterId!.toString() : task._id;
+      return taskApi.update(id, { isStarred: !task.isStarred });
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["tasks"] }),
+  });
+
   const deleteMutation = useMutation({
     mutationFn: () => {
-      // Virtual task → xóa master task (xóa toàn bộ quy tắc lặp)
-      if (task.isVirtual) {
-        return taskApi.delete(task.masterId!.toString());
-      }
+      if (task.isVirtual) return taskApi.delete(task.masterId!.toString());
       return taskApi.delete(task._id);
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["tasks"] }),
@@ -47,6 +52,7 @@ const TaskItem = ({ task, dateStr, onClick }: TaskItemProps) => {
       className="bg-white rounded-xl px-3 py-2.5 flex items-start gap-2 shadow-sm group cursor-pointer"
       onClick={onClick}
     >
+      {/* Checkbox */}
       <button
         onClick={(e) => {
           e.stopPropagation();
@@ -73,6 +79,7 @@ const TaskItem = ({ task, dateStr, onClick }: TaskItemProps) => {
         </div>
       </button>
 
+      {/* Content */}
       <div className="flex-1 min-w-0">
         <p
           className={`text-xs font-bold truncate ${task.isCompleted ? "line-through text-gray-400" : "text-gray-800"}`}
@@ -99,17 +106,35 @@ const TaskItem = ({ task, dateStr, onClick }: TaskItemProps) => {
         </div>
       </div>
 
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          deleteMutation.mutate();
-        }}
-        disabled={deleteMutation.isPending}
-        className="opacity-0 group-hover:opacity-100 text-gray-300 hover:text-red-400 transition-all p-0.5 flex-shrink-0"
-        title={task.isVirtual ? "Xóa toàn bộ quy tắc lặp" : "Xóa task"}
-      >
-        <Trash2 size={11} />
-      </button>
+      {/* Actions */}
+      <div className="flex items-center gap-0.5 flex-shrink-0">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            starMutation.mutate();
+          }}
+          disabled={starMutation.isPending}
+          className={`p-0.5 transition-all ${
+            task.isStarred
+              ? "text-yellow-400"
+              : "text-gray-300 hover:text-yellow-400"
+          }`}
+          title="Gắn dấu sao"
+        >
+          <Star size={12} fill={task.isStarred ? "currentColor" : "none"} />
+        </button>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            deleteMutation.mutate();
+          }}
+          disabled={deleteMutation.isPending}
+          className="text-gray-300 hover:text-red-400 transition-all p-0.5"
+          title={task.isVirtual ? "Xóa toàn bộ quy tắc lặp" : "Xóa task"}
+        >
+          <Trash2 size={11} />
+        </button>
+      </div>
     </div>
   );
 };

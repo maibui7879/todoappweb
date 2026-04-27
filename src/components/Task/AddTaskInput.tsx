@@ -57,6 +57,9 @@ const AddTaskInput = ({
       isMaster: repeatData.isMaster,
       repeatUnit: repeatData.repeatUnit,
       repeatInterval: repeatData.repeatInterval,
+      endDate: repeatData.endDate
+        ? new Date(repeatData.endDate).toISOString()
+        : undefined,
     });
   };
 

@@ -11,37 +11,39 @@ const MainLayout = () => {
       <div className="flex flex-1 overflow-hidden">
         {/* SIDEBAR */}
         <aside className="w-[220px] flex-shrink-0 bg-white border-r border-gray-100 flex flex-col h-full">
-          {/* LOGO */}
-          <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-100">
-            {/* Icon */}
-            <div className="relative w-10 h-10 flex-shrink-0">
-              {/* Blue shape */}
-              <div className="absolute left-0 top-[4px] w-[16px] h-[32px] bg-[#1296DB] rounded-tl-full rounded-br-full" />
-
-              {/* Purple circle */}
-              <div className="absolute right-[2px] top-0 w-[18px] h-[18px] rounded-full bg-[#5B67F2]" />
-
-              {/* Orange circle */}
-              <div className="absolute right-[2px] bottom-[2px] w-[18px] h-[18px] rounded-full bg-[#F5A623]" />
-            </div>
-
-            {/* Text */}
-            <span className="font-extrabold text-[18px] text-gray-900 tracking-tight leading-none">
+          {/* Logo */}
+          <div className="flex items-center gap-2 px-5 py-4 border-b border-gray-100">
+            <svg
+              width="32"
+              height="32"
+              viewBox="0 0 100 100"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M20 25C20 15 30 10 40 10V90C30 90 20 80 20 70V25Z"
+                fill="#0099E5"
+              />
+              <path
+                d="M40 10C65 10 80 25 80 50C80 75 65 90 40 90V10Z"
+                fill="#0099E5"
+                fillOpacity="0.2"
+              />
+              <circle cx="65" cy="30" r="18" fill="#6366F1" />
+              <circle cx="65" cy="70" r="18" fill="#F59E0B" />
+            </svg>
+            <span className="font-bold text-gray-900 text-base tracking-tight">
               To-do List
             </span>
           </div>
 
-          {/* NAV */}
+          {/* Nav */}
           <nav className="flex-1 py-3 px-3 flex flex-col gap-0.5 overflow-y-auto">
             <NavLink
               to="/tasks"
               className={({ isActive }) =>
                 `flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all
-                ${
-                  isActive
-                    ? "bg-[#EDE9FE] text-[#7C3AED] font-medium"
-                    : "text-gray-600 hover:bg-gray-50"
-                }`
+              ${isActive ? "bg-[#EDE9FE] text-[#7C3AED] font-medium" : "text-gray-600 hover:bg-gray-50"}`
               }
             >
               <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
@@ -89,11 +91,7 @@ const MainLayout = () => {
               to="/starred"
               className={({ isActive }) =>
                 `flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all
-                ${
-                  isActive
-                    ? "bg-[#EDE9FE] text-[#7C3AED] font-medium"
-                    : "text-gray-600 hover:bg-gray-50"
-                }`
+              ${isActive ? "bg-[#EDE9FE] text-[#7C3AED] font-medium" : "text-gray-600 hover:bg-gray-50"}`
               }
             >
               <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
@@ -108,7 +106,7 @@ const MainLayout = () => {
               Có gắn dấu sao
             </NavLink>
 
-            {/* DROPDOWN */}
+            {/* Danh sách dropdown */}
             <div>
               <button
                 onClick={() => setCategoryOpen(!categoryOpen)}
@@ -126,15 +124,12 @@ const MainLayout = () => {
                   </svg>
                   Danh sách
                 </div>
-
                 <svg
                   width="14"
                   height="14"
                   fill="none"
                   viewBox="0 0 24 24"
-                  className={`transition-transform ${
-                    categoryOpen ? "rotate-180" : ""
-                  }`}
+                  className={`transition-transform ${categoryOpen ? "rotate-180" : ""}`}
                 >
                   <path
                     d="M6 9l6 6 6-6"
@@ -149,7 +144,6 @@ const MainLayout = () => {
               {categoryOpen && (
                 <div className="ml-4 mt-0.5 flex flex-col gap-0.5">
                   {[
-                    { to: "/tasks", color: "bg-[#8B5CF6]", label: "Công việc" },
                     {
                       to: "/categories",
                       color: "bg-blue-400",
@@ -167,14 +161,12 @@ const MainLayout = () => {
                       to={to}
                       className={({ isActive }) =>
                         `flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-all
-                        ${
-                          isActive
-                            ? "bg-[#EDE9FE] text-[#7C3AED] font-medium"
-                            : "text-gray-500 hover:bg-gray-50"
-                        }`
+                      ${isActive ? "bg-[#EDE9FE] text-[#7C3AED] font-medium" : "text-gray-500 hover:bg-gray-50"}`
                       }
                     >
-                      <span className={`w-2 h-2 rounded-full ${color}`} />
+                      <span
+                        className={`w-2 h-2 rounded-full ${color} flex-shrink-0`}
+                      />
                       {label}
                     </NavLink>
                   ))}
@@ -184,13 +176,13 @@ const MainLayout = () => {
           </nav>
         </aside>
 
-        {/* MAIN */}
+        {/* MAIN CONTENT */}
         <main className="flex-1 overflow-y-auto">
           <Outlet />
         </main>
       </div>
 
-      {/* FOOTER */}
+      {/* FOOTER - full width */}
       <footer className="bg-[#C4B5FD] py-3 text-center text-xs text-white w-full flex-shrink-0">
         © 2026 Brand, Inc. • Privacy • Terms • Sitemap
       </footer>
