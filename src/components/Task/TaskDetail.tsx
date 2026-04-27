@@ -27,15 +27,17 @@ const TaskDetail = ({ task, dateStr, onClose }: TaskDetailProps) => {
   const [date, setDate] = useState(dayjs(task.dueDate));
   const [showCalendar, setShowCalendar] = useState(false);
   const [repeatData, setRepeatData] = useState<RepeatData>({
-    isMaster: task.isMaster || false,
-    repeatUnit: task.repeatUnit || "NONE",
+    isMaster: task.isMaster || task.isVirtual || false,
+    repeatUnit: task.repeatUnit || "DAILY",
     repeatInterval: task.repeatInterval || 1,
   });
 
+  // Cập nhật master task (cho cả virtual task)
   const updateMutation = useMutation({
     mutationFn: (data: any) => {
       if (task.isVirtual) {
-        return taskApi.realize(task.masterId!.toString(), dateStr, data);
+        // Sửa master task thay vì realize
+        return taskApi.update(task.masterId!.toString(), data);
       }
       return taskApi.update(task._id, data);
     },
@@ -47,10 +49,7 @@ const TaskDetail = ({ task, dateStr, onClose }: TaskDetailProps) => {
 
   const deleteMutation = useMutation({
     mutationFn: () => {
-      // Virtual task → xóa master task (xóa toàn bộ quy tắc lặp)
-      if (task.isVirtual) {
-        return taskApi.delete(task.masterId!.toString());
-      }
+      if (task.isVirtual) return taskApi.delete(task.masterId!.toString());
       return taskApi.delete(task._id);
     },
     onSuccess: () => {
@@ -64,7 +63,7 @@ const TaskDetail = ({ task, dateStr, onClose }: TaskDetailProps) => {
     updateMutation.mutate({
       title,
       description: desc || undefined,
-      dueDate: date.toISOString(),
+      dueDate: date.format("YYYY-MM-DDTHH:mm:ss") + "+07:00",
       isMaster: repeatData.isMaster,
       repeatUnit: repeatData.repeatUnit,
       repeatInterval: repeatData.repeatInterval,
@@ -97,6 +96,7 @@ const TaskDetail = ({ task, dateStr, onClose }: TaskDetailProps) => {
         </div>
 
         <div className="px-5 py-4 flex flex-col gap-3">
+          {/* Status */}
           <div className="flex items-center gap-2">
             <div
               className={`w-2.5 h-2.5 rounded-full ${task.isCompleted ? "bg-green-400" : "bg-orange-400"}`}
@@ -113,10 +113,12 @@ const TaskDetail = ({ task, dateStr, onClose }: TaskDetailProps) => {
 
           {task.isVirtual && (
             <div className="bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 text-xs text-amber-700">
-              ⚠️ Xóa task này sẽ xóa <strong>toàn bộ quy tắc lặp lại</strong>
+              ⚠️ Sửa/xóa task này sẽ ảnh hưởng{" "}
+              <strong>toàn bộ quy tắc lặp lại</strong>
             </div>
           )}
 
+          {/* Title */}
           <div>
             <label className="text-xs text-gray-500 mb-1 block">
               Tên công việc
@@ -129,6 +131,7 @@ const TaskDetail = ({ task, dateStr, onClose }: TaskDetailProps) => {
             />
           </div>
 
+          {/* Description */}
           <div>
             <label className="text-xs text-gray-500 mb-1 block">Mô tả</label>
             <textarea
@@ -140,6 +143,7 @@ const TaskDetail = ({ task, dateStr, onClose }: TaskDetailProps) => {
             />
           </div>
 
+          {/* Date + Repeat */}
           <div>
             <label className="text-xs text-gray-500 mb-1 block">
               Ngày & giờ
@@ -151,7 +155,7 @@ const TaskDetail = ({ task, dateStr, onClose }: TaskDetailProps) => {
               <span>{date.format("DD/MM/YYYY HH:mm")}</span>
               <CalendarDays size={16} className="text-gray-400" />
             </button>
-            {repeatData.isMaster && (
+            {repeatData.isMaster && repeatData.repeatUnit !== "NONE" && (
               <p className="text-xs text-[#8B5CF6] mt-1">
                 🔄 Lặp lại mỗi {repeatData.repeatInterval}{" "}
                 {REPEAT_LABEL[repeatData.repeatUnit]}
@@ -159,6 +163,7 @@ const TaskDetail = ({ task, dateStr, onClose }: TaskDetailProps) => {
             )}
           </div>
 
+          {/* Category */}
           {task.categoryId?.name && (
             <div className="flex items-center gap-2">
               <span className="text-xs text-gray-500">Danh mục:</span>
@@ -168,6 +173,7 @@ const TaskDetail = ({ task, dateStr, onClose }: TaskDetailProps) => {
             </div>
           )}
 
+          {/* Buttons */}
           <div className="flex gap-2 mt-1">
             <button
               onClick={onClose}
