@@ -41,12 +41,9 @@ const TasksPage = () => {
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [activeCategoryName, setActiveCategoryName] = useState("");
 
-  const today = dayjs().format("YYYY-MM-DD");
-  const dateStr = selectedDate.format("YYYY-MM-DD");
   const isCompleted = filterStatus === "done";
 
-  // Dùng hook để lấy tasks theo range
-  const { tasks, isLoading } = useTasksByRange(
+  const { tasks, isLoading, startDate } = useTasksByRange(
     selectedDate,
     range,
     isCompleted,
@@ -267,7 +264,7 @@ const TasksPage = () => {
                 key={cat._id}
                 category={cat}
                 tasks={getTasksByCategory(cat._id)}
-                dateStr={dateStr}
+                dateStr={startDate}
                 onAddTask={() => {
                   setActiveCategoryName(cat.name);
                   setShowTaskModal(true);
@@ -284,7 +281,7 @@ const TasksPage = () => {
                   userId: "",
                 }}
                 tasks={uncategorizedTasks}
-                dateStr={dateStr}
+                dateStr={startDate}
                 onAddTask={() => {
                   setActiveCategoryName("");
                   setShowTaskModal(true);

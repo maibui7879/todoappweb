@@ -31,11 +31,12 @@ const TaskItem = ({ task, dateStr, onClick }: TaskItemProps) => {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["tasks"] }),
   });
 
-  const starMutation = useMutation({
-    mutationFn: () => {
-      const id = task.isVirtual ? task.masterId!.toString() : task._id;
-      return taskApi.update(id, { isStarred: !task.isStarred });
-    },
+  const importantMutation = useMutation({
+    mutationFn: () =>
+      taskApi.markImportant(
+        task.isVirtual ? task._id : task._id,
+        !task.isImportant,
+      ),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["tasks"] }),
   });
 
@@ -111,17 +112,13 @@ const TaskItem = ({ task, dateStr, onClick }: TaskItemProps) => {
         <button
           onClick={(e) => {
             e.stopPropagation();
-            starMutation.mutate();
+            importantMutation.mutate();
           }}
-          disabled={starMutation.isPending}
-          className={`p-0.5 transition-all ${
-            task.isStarred
-              ? "text-yellow-400"
-              : "text-gray-300 hover:text-yellow-400"
-          }`}
-          title="Gắn dấu sao"
+          disabled={importantMutation.isPending}
+          className={`p-0.5 transition-all ${task.isImportant ? "text-yellow-400" : "text-gray-300 hover:text-yellow-400"}`}
+          title="Đánh dấu quan trọng"
         >
-          <Star size={12} fill={task.isStarred ? "currentColor" : "none"} />
+          <Star size={12} fill={task.isImportant ? "currentColor" : "none"} />
         </button>
         <button
           onClick={(e) => {

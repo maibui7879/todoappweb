@@ -206,8 +206,9 @@ const RepeatPickerPopup = ({
   const endDateDayjs = dayjs(endDate);
 
   return (
+    // anchor bottom so popup grows upward — tránh bị cắt khi gần đáy màn hình
     <div
-      className="absolute left-full ml-2 top-0 bg-white rounded-2xl shadow-2xl border border-gray-100 p-4 z-50"
+      className="absolute left-full ml-2 bottom-0 bg-white rounded-2xl shadow-2xl border border-gray-100 p-4 z-50"
       style={{ width: 240 }}
     >
       <p className="text-sm font-bold text-gray-800 mb-3">Lặp lại</p>
@@ -289,9 +290,15 @@ const RepeatPickerPopup = ({
           </label>
         </div>
 
-        {/* End date calendar */}
+        {/* End date calendar — bên phải RepeatPopup, anchor bottom để mở lên trên */}
         {endType === "date" && showEndCalendar && (
-          <div className="mt-2 border border-[#EDE9FE] rounded-xl p-3 bg-white shadow-sm">
+          <div
+            className="absolute left-full ml-2 bottom-0 bg-white rounded-2xl shadow-2xl border border-gray-100 p-4 z-50"
+            style={{ width: 260 }}
+          >
+            <p className="text-xs font-semibold text-[#8B5CF6] mb-3">
+              Chọn ngày kết thúc
+            </p>
             <MiniCalendar
               value={endDateDayjs}
               onChange={(d) => {

@@ -12,11 +12,13 @@ export interface Task {
   description?: string;
   dueDate: string;
   isCompleted: boolean;
-  isStarred?: boolean;
+  isImportant?: boolean;
   isMaster?: boolean;
   repeatUnit?: RepeatUnit;
   repeatInterval?: number;
+  repeatDays?: number[];
   startDate?: string;
+  endRepeatDate?: string;
   masterId?: string;
   categoryId?: any;
   isVirtual?: boolean;

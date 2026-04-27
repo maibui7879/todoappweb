@@ -1,67 +1,30 @@
 // src/hooks/useTasksByRange.ts
-import { useQueries } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { taskApi } from "../api/task.api";
-import { type Task } from "../types/task.type";
 import dayjs from "dayjs";
 
-type RangeType = "day" | "week" | "month";
-
-const getDaysInRange = (date: dayjs.Dayjs, range: RangeType): string[] => {
-  if (range === "day") {
-    return [date.format("YYYY-MM-DD")];
-  }
-  if (range === "week") {
-    const start = date.startOf("week");
-    return Array.from({ length: 7 }, (_, i) =>
-      start.add(i, "day").format("YYYY-MM-DD"),
-    );
-  }
-  if (range === "month") {
-    const start = date.startOf("month");
-    const days = date.daysInMonth();
-    return Array.from({ length: days }, (_, i) =>
-      start.add(i, "day").format("YYYY-MM-DD"),
-    );
-  }
-  return [];
-};
+type RangeType = "week" | "month";
 
 export const useTasksByRange = (
   date: dayjs.Dayjs,
   range: RangeType,
   isCompleted: boolean,
 ) => {
-  const days = getDaysInRange(date, range);
+  const startDate =
+    range === "week"
+      ? date.startOf("week").format("YYYY-MM-DD")
+      : date.startOf("month").format("YYYY-MM-DD");
 
-  const queries = useQueries({
-    queries: days.map((day) => ({
-      queryKey: ["tasks", day, isCompleted],
-      queryFn: () => taskApi.getTasks(day, isCompleted),
-      staleTime: 1000 * 60 * 5,
-    })),
+  const endDate =
+    range === "week"
+      ? date.endOf("week").format("YYYY-MM-DD")
+      : date.endOf("month").format("YYYY-MM-DD");
+
+  const { data: tasks = [], isLoading } = useQuery({
+    queryKey: ["tasks", startDate, endDate, isCompleted],
+    queryFn: () => taskApi.getTasks(startDate, endDate, isCompleted),
+    staleTime: 1000 * 60 * 2,
   });
 
-  const isLoading = queries.some((q) => q.isLoading);
-
-  // Gộp tất cả tasks lại, loại trùng theo _id
-  const allTasks: Task[] = [];
-  const seenIds = new Set<string>();
-
-  queries.forEach((q) => {
-    if (q.data) {
-      (q.data as Task[]).forEach((task) => {
-        if (!seenIds.has(task._id)) {
-          seenIds.add(task._id);
-          allTasks.push(task);
-        }
-      });
-    }
-  });
-
-  // Sort theo dueDate
-  allTasks.sort(
-    (a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime(),
-  );
-
-  return { tasks: allTasks, isLoading, days };
+  return { tasks, isLoading, startDate, endDate };
 };

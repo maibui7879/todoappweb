@@ -11,13 +11,12 @@ const StarredPage = () => {
   const queryClient = useQueryClient();
 
   const { data: tasks = [], isLoading } = useQuery({
-    queryKey: ["tasks", "starred"],
-    queryFn: () => taskApi.getStarred(),
+    queryKey: ["tasks", "important"],
+    queryFn: () => taskApi.getImportant(),
   });
 
-  const starMutation = useMutation({
-    mutationFn: (taskId: string) =>
-      taskApi.update(taskId, { isStarred: false }),
+  const unimportantMutation = useMutation({
+    mutationFn: (taskId: string) => taskApi.markImportant(taskId, false),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["tasks"] }),
   });
 
@@ -56,9 +55,8 @@ const StarredPage = () => {
             {(tasks as Task[]).map((task) => (
               <div
                 key={task._id}
-                className="bg-white rounded-2xl px-5 py-4 shadow-sm flex items-start gap-3 group"
+                className="bg-white rounded-2xl px-5 py-4 shadow-sm flex items-start gap-3"
               >
-                {/* Checkbox */}
                 <div
                   className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 mt-0.5
                   ${task.isCompleted ? "border-[#8B5CF6] bg-[#8B5CF6]" : "border-gray-300"}`}
@@ -75,8 +73,6 @@ const StarredPage = () => {
                     </svg>
                   )}
                 </div>
-
-                {/* Content */}
                 <div className="flex-1 min-w-0">
                   <p
                     className={`text-sm font-bold ${task.isCompleted ? "line-through text-gray-400" : "text-gray-800"}`}
@@ -107,11 +103,9 @@ const StarredPage = () => {
                     )}
                   </div>
                 </div>
-
-                {/* Unstar */}
                 <button
-                  onClick={() => starMutation.mutate(task._id)}
-                  disabled={starMutation.isPending}
+                  onClick={() => unimportantMutation.mutate(task._id)}
+                  disabled={unimportantMutation.isPending}
                   className="text-yellow-400 hover:text-gray-300 transition-colors p-1 flex-shrink-0"
                   title="Bỏ gắn dấu sao"
                 >
