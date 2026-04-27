@@ -1,11 +1,15 @@
 // src/api/axiosClient.ts
-import axios from 'axios';
-import type { InternalAxiosRequestConfig, AxiosError, AxiosResponse } from 'axios';
+import axios from "axios";
+import type {
+  InternalAxiosRequestConfig,
+  AxiosError,
+  AxiosResponse,
+} from "axios";
 
 const axiosClient = axios.create({
-  baseURL: 'http://localhost:3000', // ✅ đúng BE
+  baseURL: "https://sybausuzuka-todoapp.hf.space",
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
@@ -14,12 +18,12 @@ const axiosClient = axios.create({
 // ====================
 axiosClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
 
     // ❗ KHÔNG gửi token cho login/register
     const isAuthRoute =
-      config.url?.includes('/auth/login') ||
-      config.url?.includes('/auth/register');
+      config.url?.includes("/auth/login") ||
+      config.url?.includes("/auth/register");
 
     if (token && config.headers && !isAuthRoute) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -27,7 +31,7 @@ axiosClient.interceptors.request.use(
 
     return config;
   },
-  (error: AxiosError) => Promise.reject(error)
+  (error: AxiosError) => Promise.reject(error),
 );
 
 // ====================
@@ -38,12 +42,12 @@ axiosClient.interceptors.response.use(
 
   (error: AxiosError) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('token');
+      localStorage.removeItem("token");
     }
 
     // ❗ giữ nguyên error để FE đọc được message
     return Promise.reject(error);
-  }
+  },
 );
 
 export default axiosClient;
