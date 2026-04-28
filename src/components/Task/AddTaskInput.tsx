@@ -124,7 +124,7 @@ const AddTaskInput = ({
             </button>
             {repeatData.isMaster && (
               <p className="text-xs text-[#8B5CF6] mt-1">
-                🔄 Lặp lại mỗi {repeatData.repeatInterval}{" "}
+                Lặp lại mỗi {repeatData.repeatInterval}{" "}
                 {REPEAT_LABEL[repeatData.repeatUnit]}
               </p>
             )}
