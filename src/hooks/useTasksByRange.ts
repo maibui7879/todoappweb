@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { taskApi } from "../api/task.api";
 import dayjs from "dayjs";
 
-type RangeType = "week" | "month";
+type RangeType = "day" | "week" | "month";
 
 export const useTasksByRange = (
   date: dayjs.Dayjs,
@@ -11,14 +11,18 @@ export const useTasksByRange = (
   isCompleted: boolean,
 ) => {
   const startDate =
-    range === "week"
-      ? date.startOf("week").format("YYYY-MM-DD")
-      : date.startOf("month").format("YYYY-MM-DD");
+    range === "day"
+      ? date.format("YYYY-MM-DD")
+      : range === "week"
+        ? date.startOf("week").format("YYYY-MM-DD")
+        : date.startOf("month").format("YYYY-MM-DD");
 
   const endDate =
-    range === "week"
-      ? date.endOf("week").format("YYYY-MM-DD")
-      : date.endOf("month").format("YYYY-MM-DD");
+    range === "day"
+      ? date.format("YYYY-MM-DD")
+      : range === "week"
+        ? date.endOf("week").format("YYYY-MM-DD")
+        : date.endOf("month").format("YYYY-MM-DD");
 
   const { data: tasks = [], isLoading } = useQuery({
     queryKey: ["tasks", startDate, endDate, isCompleted],

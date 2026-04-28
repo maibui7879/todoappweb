@@ -15,14 +15,21 @@ import { useTasksByRange } from "../../hooks/useTasksByRange";
 dayjs.locale("vi");
 
 type FilterStatus = "todo" | "done";
-type RangeType = "week" | "month";
+type RangeType = "day" | "week" | "month";
 
 const RANGE_LABELS: Record<RangeType, string> = {
+  day: "Ngày",
   week: "Tuần",
   month: "Tháng",
 };
 
 const getRangeLabel = (date: dayjs.Dayjs, range: RangeType): string => {
+  const today = dayjs().format("YYYY-MM-DD");
+  if (range === "day") {
+    return date.format("YYYY-MM-DD") === today
+      ? "Hôm nay"
+      : date.format("DD/MM/YYYY");
+  }
   if (range === "week") {
     const start = date.startOf("week");
     const end = date.endOf("week");
@@ -63,12 +70,14 @@ const TasksPage = () => {
   const uncategorizedTasks = tasks.filter((t: Task) => !t.categoryId);
 
   const goPrev = () => {
-    if (range === "week") setSelectedDate((d) => d.subtract(1, "week"));
+    if (range === "day") setSelectedDate((d) => d.subtract(1, "day"));
+    else if (range === "week") setSelectedDate((d) => d.subtract(1, "week"));
     else setSelectedDate((d) => d.subtract(1, "month"));
   };
 
   const goNext = () => {
-    if (range === "week") setSelectedDate((d) => d.add(1, "week"));
+    if (range === "day") setSelectedDate((d) => d.add(1, "day"));
+    else if (range === "week") setSelectedDate((d) => d.add(1, "week"));
     else setSelectedDate((d) => d.add(1, "month"));
   };
 
@@ -179,7 +188,6 @@ const TasksPage = () => {
 
       {/* MAIN */}
       <div className="flex-1 w-full px-16 py-8">
-        {/* TOP BAR */}
         <div className="flex items-center justify-between flex-wrap gap-4 mb-6">
           <div className="flex items-center gap-3">
             <h2 className="text-xl font-bold text-gray-800">
@@ -197,7 +205,7 @@ const TasksPage = () => {
           <div className="flex items-center gap-2 flex-wrap">
             {/* Range selector */}
             <div className="flex bg-white border border-gray-200 rounded-xl p-1 gap-1">
-              {(["week", "month"] as RangeType[]).map((r) => (
+              {(["day", "week", "month"] as RangeType[]).map((r) => (
                 <button
                   key={r}
                   onClick={() => setRange(r)}

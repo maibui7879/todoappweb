@@ -150,5 +150,4 @@ const AddTaskInput = ({
     </div>
   );
 };
-
 export default AddTaskInput;
