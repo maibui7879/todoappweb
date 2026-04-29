@@ -1,11 +1,19 @@
 // src/pages/tasks/TasksPage.tsx
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { categoryApi } from "../../api/category.api";
 import { type Task } from "../../types/task.type";
 import { type Category } from "../../types/category.type";
-import { Plus, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  Plus,
+  ChevronLeft,
+  ChevronRight,
+  Bell,
+  LogOut,
+  User,
+} from "lucide-react";
 import dayjs from "dayjs";
 import "dayjs/locale/vi";
 import CategoryCard from "../../components/Category/CategoryCard";
@@ -40,6 +48,35 @@ const getRangeLabel = (date: dayjs.Dayjs, range: RangeType): string => {
 
 const TasksPage = () => {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const isDragging = useRef(false);
+  const startX = useRef(0);
+  const scrollLeftStart = useRef(0);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    isDragging.current = true;
+    startX.current = e.pageX - (scrollRef.current?.offsetLeft || 0);
+    scrollLeftStart.current = scrollRef.current?.scrollLeft || 0;
+    if (scrollRef.current) scrollRef.current.style.cursor = "grabbing";
+  };
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging.current || !scrollRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - scrollRef.current.offsetLeft;
+    scrollRef.current.scrollLeft =
+      scrollLeftStart.current - (x - startX.current);
+  };
+  const handleMouseUp = () => {
+    isDragging.current = false;
+    if (scrollRef.current) scrollRef.current.style.cursor = "grab";
+  };
+  const scrollBy = (dir: "left" | "right") => {
+    scrollRef.current?.scrollBy({
+      left: dir === "left" ? -360 : 360,
+      behavior: "smooth",
+    });
+  };
   const [filterStatus, setFilterStatus] = useState<FilterStatus>("todo");
   const [range, setRange] = useState<RangeType>("week");
   const [selectedDate, setSelectedDate] = useState(dayjs());
@@ -88,22 +125,32 @@ const TasksPage = () => {
         <span className="text-sm font-semibold text-[#8B5CF6] tracking-wide">
           XIN CHÀO, {(user?.fullName || user?.email || "USER").toUpperCase()}
         </span>
-        <button
-          onClick={() => logout()}
-          className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700"
-        >
-          Đăng xuất
-          <div className="w-7 h-7 rounded-full bg-gray-200 flex items-center justify-center">
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
-              <path
-                d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"
-                stroke="#666"
-                strokeWidth="2"
-              />
-              <circle cx="12" cy="7" r="4" stroke="#666" strokeWidth="2" />
-            </svg>
-          </div>
-        </button>
+        <div className="flex items-center gap-1">
+          {/* Thông báo */}
+          <button
+            onClick={() => navigate("/notifications")}
+            className="w-9 h-9 flex items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 hover:text-[#8B5CF6] transition-colors"
+            title="Thông báo"
+          >
+            <Bell size={18} />
+          </button>
+          {/* Đăng xuất */}
+          <button
+            onClick={() => logout()}
+            className="w-9 h-9 flex items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 hover:text-red-500 transition-colors"
+            title="Đăng xuất"
+          >
+            <LogOut size={18} />
+          </button>
+          {/* Trang cá nhân */}
+          <button
+            onClick={() => navigate("/profile")}
+            className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 hover:bg-[#EDE9FE] text-gray-500 hover:text-[#8B5CF6] transition-colors ml-1"
+            title="Trang cá nhân"
+          >
+            <User size={18} />
+          </button>
+        </div>
       </div>
 
       {/* HERO */}
@@ -260,52 +307,86 @@ const TasksPage = () => {
           </div>
         </div>
 
-        {/* TASK GRID */}
+        {/* TASK GRID - scroll ngang */}
         {isLoading ? (
           <div className="flex items-center justify-center py-16 text-gray-400 text-sm">
             Đang tải...
           </div>
         ) : (
-          <div className="grid grid-cols-3 gap-6">
-            {categories.map((cat: Category) => (
-              <CategoryCard
-                key={cat._id}
-                category={cat}
-                tasks={getTasksByCategory(cat._id)}
-                dateStr={startDate}
-                onAddTask={() => {
-                  setActiveCategoryName(cat.name);
-                  setShowTaskModal(true);
-                }}
-                onEdit={() => setEditingCategory(cat)}
-              />
-            ))}
-            {uncategorizedTasks.length > 0 && (
-              <CategoryCard
-                category={{
-                  _id: "uncategorized",
-                  name: "TO DO",
-                  color: "#8B5CF6",
-                  userId: "",
-                }}
-                tasks={uncategorizedTasks}
-                dateStr={startDate}
-                onAddTask={() => {
-                  setActiveCategoryName("");
-                  setShowTaskModal(true);
-                }}
-                onEdit={() => {}}
-              />
-            )}
-            {categories.length === 0 && uncategorizedTasks.length === 0 && (
-              <div className="col-span-3 flex flex-col items-center justify-center py-16 text-gray-400">
-                <div className="text-4xl mb-3">📋</div>
-                <p className="text-sm mb-1">Không có công việc nào</p>
-                <p className="text-xs">
-                  Bấm nút <strong>+</strong> để tạo danh mục đầu tiên
-                </p>
-              </div>
-            )}
+          <div className="relative">
+            {/* Button trái */}
+            <button
+              onClick={() => scrollBy("left")}
+              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 w-8 h-8 bg-white border border-gray-200 rounded-full shadow-md flex items-center justify-center text-gray-500 hover:text-[#8B5CF6] hover:border-[#8B5CF6] transition-colors"
+            >
+              <ChevronLeft size={16} />
+            </button>
+
+            {/* Scroll container */}
+            <div
+              ref={scrollRef}
+              className="flex gap-6 overflow-x-auto pb-2"
+              style={{
+                scrollbarWidth: "none",
+                msOverflowStyle: "none",
+                cursor: "grab",
+              }}
+              onMouseDown={handleMouseDown}
+              onMouseMove={handleMouseMove}
+              onMouseUp={handleMouseUp}
+              onMouseLeave={handleMouseUp}
+            >
+              {categories.map((cat: Category) => (
+                <div key={cat._id} className="flex-shrink-0 w-[340px]">
+                  <CategoryCard
+                    category={cat}
+                    tasks={getTasksByCategory(cat._id)}
+                    dateStr={startDate}
+                    onAddTask={() => {
+                      setActiveCategoryName(cat.name);
+                      setShowTaskModal(true);
+                    }}
+                    onEdit={() => setEditingCategory(cat)}
+                  />
+                </div>
+              ))}
+              {uncategorizedTasks.length > 0 && (
+                <div className="flex-shrink-0 w-[340px]">
+                  <CategoryCard
+                    category={{
+                      _id: "uncategorized",
+                      name: "TO DO",
+                      color: "#8B5CF6",
+                      userId: "",
+                    }}
+                    tasks={uncategorizedTasks}
+                    dateStr={startDate}
+                    onAddTask={() => {
+                      setActiveCategoryName("");
+                      setShowTaskModal(true);
+                    }}
+                    onEdit={() => {}}
+                  />
+                </div>
+              )}
+              {categories.length === 0 && uncategorizedTasks.length === 0 && (
+                <div className="flex flex-col items-center justify-center py-16 text-gray-400 w-full">
+                  <div className="text-4xl mb-3">📋</div>
+                  <p className="text-sm mb-1">Không có công việc nào</p>
+                  <p className="text-xs">
+                    Bấm nút <strong>+</strong> để tạo danh mục đầu tiên
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Button phải */}
+            <button
+              onClick={() => scrollBy("right")}
+              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 w-8 h-8 bg-white border border-gray-200 rounded-full shadow-md flex items-center justify-center text-gray-500 hover:text-[#8B5CF6] hover:border-[#8B5CF6] transition-colors"
+            >
+              <ChevronRight size={16} />
+            </button>
           </div>
         )}
       </div>

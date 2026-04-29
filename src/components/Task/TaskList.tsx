@@ -6,6 +6,7 @@ interface TaskListProps {
   tasks: Task[];
   dateStr: string;
   onTaskClick?: (task: Task) => void;
+  onShowAll?: () => void;
   maxItems?: number;
 }
 
@@ -13,6 +14,7 @@ const TaskList = ({
   tasks,
   dateStr,
   onTaskClick,
+  onShowAll,
   maxItems = 4,
 }: TaskListProps) => {
   const visible = tasks.slice(0, maxItems);
@@ -37,9 +39,12 @@ const TaskList = ({
         />
       ))}
       {remaining > 0 && (
-        <p className="text-xs text-gray-400 text-center py-1">
+        <button
+          onClick={onShowAll}
+          className="text-xs text-[#8B5CF6] hover:text-[#7C3AED] text-center py-1 hover:underline transition-colors"
+        >
           +{remaining} công việc khác
-        </p>
+        </button>
       )}
     </div>
   );
