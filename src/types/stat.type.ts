@@ -13,6 +13,7 @@ export interface OverviewStatCardProps {
   color: string;
   description?: string;
   progress?: number;
+  icon?: React.ReactNode;
 }
 
 export interface OverviewGridProps {
