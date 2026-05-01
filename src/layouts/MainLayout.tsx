@@ -144,12 +144,14 @@ const MainLayout = () => {
               {categoryOpen && (
                 <div className="ml-4 mt-0.5 flex flex-col gap-0.5">
                   {[
-                    {
-                      to: "/categories",
-                      color: "bg-blue-400",
-                      label: "Danh mục",
-                    },
-                    { to: "/stats", color: "bg-green-400", label: "Thống kê" },
+                    // {
+                    //   to: "/categories",
+                    //   color: "bg-blue-400",
+                    //   label: "Danh mục",
+                    // },
+                    { to: "/stats", 
+                      color: "bg-green-400", 
+                      label: "Thống kê" },
                     {
                       to: "/notifications",
                       color: "bg-orange-400",
