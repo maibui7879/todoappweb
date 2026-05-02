@@ -3,8 +3,8 @@ import { useState } from "react";
 import { X } from "lucide-react";
 import { type Category } from "../../types/category.type";
 import { type Task } from "../../types/task.type";
-import TaskItem from "../Task/TaskItem";
-import TaskDetail from "../Task/TaskDetail";
+import TaskItem from "../../pages/tasks/Task/TaskItem";
+import TaskDetail from "../../pages/tasks/Task/TaskDetail";
 
 interface CategoryDetailModalProps {
   category: Category;

@@ -1,8 +1,8 @@
 // src/components/Task/TaskItem.tsx
 import { Trash2, RefreshCw, Star } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { taskApi } from "../../api/task.api";
-import { type Task } from "../../types/task.type";
+import { taskApi } from "../../../api/task.api";
+import { type Task } from "../../../types/task.type";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";

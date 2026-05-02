@@ -1,5 +1,5 @@
 // src/components/Task/TaskList.tsx
-import { type Task } from "../../types/task.type";
+import { type Task } from "../../../types/task.type";
 import TaskItem from "./TaskItem";
 
 interface TaskListProps {

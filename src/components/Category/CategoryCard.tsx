@@ -6,8 +6,8 @@ import { categoryApi } from "../../api/category.api";
 import { taskApi } from "../../api/task.api";
 import { type Category } from "../../types/category.type";
 import { type Task } from "../../types/task.type";
-import TaskList from "../Task/TaskList";
-import TaskDetail from "../Task/TaskDetail";
+import TaskList from "../../pages/tasks/Task/TaskList";
+import TaskDetail from "../../pages/tasks/Task/TaskDetail";
 import CategoryDetailModal from "./CategoryDetailModal";
 
 interface CategoryCardProps {

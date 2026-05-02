@@ -2,8 +2,8 @@
 import { useState } from "react";
 import { X, CalendarDays, Trash2, RefreshCw } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { taskApi } from "../../api/task.api";
-import { type Task } from "../../types/task.type";
+import { taskApi } from "../../../api/task.api";
+import { type Task } from "../../../types/task.type";
 import CalendarPopup, { type RepeatData } from "./CalendarPopup";
 import dayjs from "dayjs";
 

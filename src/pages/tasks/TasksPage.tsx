@@ -18,7 +18,7 @@ import dayjs from "dayjs";
 import "dayjs/locale/vi";
 import CategoryCard from "../../components/Category/CategoryCard";
 import CategoryModal from "../../components/Category/CategoryModal";
-import AddTaskInput from "../../components/Task/AddTaskInput";
+import AddTaskInput from "./Task/AddTaskInput";
 import { useTasksByRange } from "../../hooks/useTasksByRange";
 dayjs.locale("vi");
 
