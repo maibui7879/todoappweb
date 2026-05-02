@@ -5,26 +5,42 @@ import type { StatsHeaderProps } from '../../types/stat.type';
 
 export const StatHeader = ({ period, setPeriod, dateRange, currentDate, onDateChange }: StatsHeaderProps) => {
   return (
-    <ConfigProvider theme={{ token: { colorPrimary: '#7c3aed' } }}>
-      <div className="flex items-center justify-between py-6">
-        <h1 className="text-2xl font-bold text-slate-800">Thống kê hiệu suất</h1>
-        
-        {/* Badge hiển thị khoảng ngày */}
-        <div className="bg-violet-100 text-violet-600 px-4 py-1.5 rounded-full text-sm font-medium">
-          {dateRange} {/* Giá trị này giờ là do Backend quyết định và Hook truyền xuống[cite: 2] */}
+    <ConfigProvider theme={{ 
+      token: { 
+        colorPrimary: '#7c3aed',
+        borderRadius: 12,
+      } 
+    }}>
+      <div className="flex flex-col gap-4 py-6">
+        {/* Row 1: Title & Badge */}
+        <div className="flex items-center justify-between">
+          <div className="flex flex-col">
+            <h1 className="text-[36px] leading-[40px] font-[800] font-['Archivo'] bg-gradient-to-r from-[#5BB0E5] to-[#7174E4] bg-clip-text text-transparent">
+              Hiệu suất công việc
+            </h1>
+            <p className="text-[#7198E5] mt-2 font-medium text-[15px] italic">
+              Phân tích chi tiết và theo dõi tiến độ công việc hàng ngày của bạn.
+            </p>
+          </div>
+
+          {/* Badge khoảng ngày - Dùng chung Gradient cho đồng bộ */}
+          <div className="bg-gradient-to-r from-[#60A5FA] to-[#7174E4] text-white px-6 py-2 rounded-2xl text-sm font-bold shadow-lg shadow-blue-100/50">
+            {dateRange}
+          </div>
         </div>
 
-        <div className="flex items-center gap-4">
-          {/* Thanh chọn Tab */}
-          <div className="flex bg-slate-50 p-1 rounded-xl border border-slate-100">
+        {/* Row 2: Tabs & DatePicker */}
+        <div className="flex items-center justify-end gap-4 mt-2">
+          {/* Thanh chọn Tab style Gradient đồng bộ */}
+          <div className="flex bg-[#F8FAFC] p-1.5 rounded-2xl shadow-inner border border-gray-100">
             {(['week', 'month', 'year'] as const).map((p) => (
               <button
                 key={p}
                 onClick={() => setPeriod(p)}
-                className={`px-6 py-2 rounded-lg text-sm font-semibold transition-all ${
-                  period === p 
-                    ? 'bg-white shadow-sm text-violet-600 border-b-2 border-violet-600 rounded-none' 
-                    : 'text-slate-400 hover:text-slate-600'
+                className={`px-8 py-2 rounded-xl text-sm font-bold transition-all duration-300 ${
+                  period === p
+                    ? 'bg-gradient-to-r from-[#60A5FA] to-[#8B5CF6] text-white shadow-md shadow-indigo-200'
+                    : 'text-gray-400 hover:text-indigo-400'
                 }`}
               >
                 {p === 'week' ? 'Tuần' : p === 'month' ? 'Tháng' : 'Năm'}
@@ -32,15 +48,23 @@ export const StatHeader = ({ period, setPeriod, dateRange, currentDate, onDateCh
             ))}
           </div>
 
-          {/* Bộ chọn ngày mốc */}
-          <DatePicker 
-            value={dayjs(currentDate)}
-            onChange={(date) => date && onDateChange(date.format('YYYY-MM-DD'))}
-            allowClear={false}
-            suffixIcon={<CalendarOutlined />}
-            className="rounded-xl h-[42px] border-slate-200"
-            format="DD/MM/YYYY"
-          />
+          {/* Bộ chọn ngày mốc - Gradient Xanh-Tím */}
+          <div className="relative group">
+            <DatePicker
+              value={dayjs(currentDate)}
+              onChange={(date) => date && onDateChange(date.format('YYYY-MM-DD'))}
+              allowClear={false}
+              suffixIcon={<CalendarOutlined className="text-white group-hover:scale-110 transition-transform" />}
+              className="rounded-2xl h-[48px] border-none bg-gradient-to-r from-[#60A5FA] to-[#8B5CF6] text-white font-bold px-5 shadow-lg shadow-blue-100 hover:shadow-indigo-200"
+              format="DD/MM/YYYY"
+              inputReadOnly
+              placeholder="Chọn ngày"
+              style={{ color: 'white' }}
+            />
+            <span className="absolute left-4 top-[-10px] bg-white px-2 text-[10px] font-[800] text-indigo-400 border border-indigo-50 rounded-md shadow-sm">
+              NGÀY MỐC
+            </span>
+          </div>
         </div>
       </div>
     </ConfigProvider>
