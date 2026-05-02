@@ -113,7 +113,7 @@ const TaskDetail = ({ task, dateStr, onClose }: TaskDetailProps) => {
 
           {task.isVirtual && (
             <div className="bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 text-xs text-amber-700">
-              ⚠️ Sửa/xóa task này sẽ ảnh hưởng{" "}
+              Sửa/xóa task này sẽ ảnh hưởng{" "}
               <strong>toàn bộ quy tắc lặp lại</strong>
             </div>
           )}
@@ -157,7 +157,7 @@ const TaskDetail = ({ task, dateStr, onClose }: TaskDetailProps) => {
             </button>
             {repeatData.isMaster && repeatData.repeatUnit !== "NONE" && (
               <p className="text-xs text-[#8B5CF6] mt-1">
-                🔄 Lặp lại mỗi {repeatData.repeatInterval}{" "}
+                 Lặp lại mỗi {repeatData.repeatInterval}{" "}
                 {REPEAT_LABEL[repeatData.repeatUnit]}
               </p>
             )}

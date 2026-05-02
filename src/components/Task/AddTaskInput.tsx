@@ -85,7 +85,7 @@ const AddTaskInput = ({
         <div className="px-5 pb-5 flex flex-col gap-3">
           {categoryName && (
             <span className="text-xs text-[#8B5CF6] bg-[#EDE9FE] px-3 py-1 rounded-full w-fit">
-              📁 {categoryName}
+              {categoryName}
             </span>
           )}
           <div>

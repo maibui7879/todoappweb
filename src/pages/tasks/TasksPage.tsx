@@ -299,7 +299,6 @@ const TasksPage = () => {
             )}
             {categories.length === 0 && uncategorizedTasks.length === 0 && (
               <div className="col-span-3 flex flex-col items-center justify-center py-16 text-gray-400">
-                <div className="text-4xl mb-3">📋</div>
                 <p className="text-sm mb-1">Không có công việc nào</p>
                 <p className="text-xs">
                   Bấm nút <strong>+</strong> để tạo danh mục đầu tiên

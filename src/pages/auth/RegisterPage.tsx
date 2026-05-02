@@ -10,17 +10,17 @@ const RegisterPage = () => {
 
   const onFinish = async (values: any) => {
     try {
-      // ❗ bỏ confirmPassword trước khi gửi lên BE
+      // bỏ confirmPassword trước khi gửi lên BE
       const { confirmPassword, ...payload } = values;
 
       const res = await authApi.register(payload);
 
-      // 👉 debug nếu cần
+      // debug nếu cần
       console.log('REGISTER RES:', res);
 
       message.success(res.message || 'Đăng ký thành công');
 
-      // 👉 chuyển về login (SPA chuẩn)
+      // chuyển về login (SPA chuẩn)
       navigate('/');
 
     } catch (err: any) {
