@@ -43,11 +43,7 @@ const AddTaskInput = ({
 
   const handleSubmit = () => {
     if (!title.trim()) return;
-    const dueDate = repeatData.isMaster
-      ? toUTC7ISOString(
-          dayjs().hour(date.hour()).minute(date.minute()).second(0),
-        )
-      : toUTC7ISOString(date);
+    const dueDate = toUTC7ISOString(date);
 
     createMutation.mutate({
       title,

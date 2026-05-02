@@ -3,10 +3,12 @@ import { useState, useRef } from "react";
 import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { categoryApi } from "../../api/category.api";
+import { taskApi } from "../../api/task.api";
 import { type Category } from "../../types/category.type";
 import { type Task } from "../../types/task.type";
 import TaskList from "../Task/TaskList";
 import TaskDetail from "../Task/TaskDetail";
+import CategoryDetailModal from "./CategoryDetailModal";
 
 interface CategoryCardProps {
   category: Category;
@@ -27,12 +29,28 @@ const CategoryCard = ({
   const [showMenu, setShowMenu] = useState(false);
   const [menuPos, setMenuPos] = useState({ top: 0, left: 0 });
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [showDetail, setShowDetail] = useState(false);
   const menuBtnRef = useRef<HTMLButtonElement>(null);
 
   const deleteMutation = useMutation({
-    mutationFn: () => categoryApi.delete(category._id),
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ["categories"] }),
+    mutationFn: async () => {
+      // Xóa tất cả task thuộc category này trước
+      // Virtual task thì xóa masterId, task thật thì xóa _id
+      const idsToDelete = [
+        ...new Set(
+          tasks.map((t) =>
+            t.isVirtual && t.masterId ? t.masterId.toString() : t._id,
+          ),
+        ),
+      ];
+      await Promise.all(idsToDelete.map((id) => taskApi.delete(id)));
+      // Sau đó mới xóa category
+      return categoryApi.delete(category._id);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["categories"] });
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+    },
   });
 
   const handleMenuClick = () => {
@@ -56,16 +74,23 @@ const CategoryCard = ({
             <span className="text-xs font-bold text-gray-600 uppercase tracking-wide truncate">
               {category.name}
             </span>
+            {tasks.length > 0 && (
+              <span className="text-xs text-gray-400 bg-white/70 px-1.5 py-0.5 rounded-full flex-shrink-0">
+                {tasks.length}
+              </span>
+            )}
           </div>
-          {category._id !== "uncategorized" && (
-            <button
-              ref={menuBtnRef}
-              onClick={handleMenuClick}
-              className="text-gray-400 hover:text-gray-600 p-1 rounded-lg hover:bg-white/50 flex-shrink-0"
-            >
-              <MoreHorizontal size={16} />
-            </button>
-          )}
+          <div className="flex items-center gap-1 flex-shrink-0">
+            {category._id !== "uncategorized" && (
+              <button
+                ref={menuBtnRef}
+                onClick={handleMenuClick}
+                className="text-gray-400 hover:text-gray-600 p-1 rounded-lg hover:bg-white/50"
+              >
+                <MoreHorizontal size={16} />
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Dropdown menu */}
@@ -106,6 +131,7 @@ const CategoryCard = ({
           tasks={tasks}
           dateStr={dateStr}
           onTaskClick={(task) => setSelectedTask(task)}
+          onShowAll={() => setShowDetail(true)}
         />
 
         {/* Add task button */}
@@ -138,6 +164,16 @@ const CategoryCard = ({
           task={selectedTask}
           dateStr={dateStr}
           onClose={() => setSelectedTask(null)}
+        />
+      )}
+
+      {/* Category detail modal - tất cả task */}
+      {showDetail && (
+        <CategoryDetailModal
+          category={category}
+          tasks={tasks}
+          dateStr={dateStr}
+          onClose={() => setShowDetail(false)}
         />
       )}
     </>
