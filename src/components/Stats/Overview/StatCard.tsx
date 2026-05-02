@@ -1,44 +1,54 @@
-import type { OverviewStatCardProps } from '../../../types/stat.type';
+import React from 'react';
+import { AlertCircle, Star, CheckCircle2 } from 'lucide-react';
 
-export const StatCard = ({
-  title,
-  value,
-  color, // Ví dụ: 'text-violet-600' hoặc 'text-red-500'
-  description,
-  icon,
-  progress,
-}: OverviewStatCardProps) => (
-  <div className="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 flex flex-col h-full">
-    {/* Header: Title & Progress % */}
-    <div className="flex items-center justify-between gap-4 mb-2">
-      <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">{title}</p>
-    </div>
+interface StatCardProps {
+  label: string;
+  value: string | number;
+  subLabel?: string;
+  type: 'overdue' | 'important' | 'progress';
+}
 
-    {/* Value Section */}
-    <div className="flex items-end gap-2 mb-1">
-      <p className={`text-3xl font-bold ${color}`}>{value}</p>
-    </div>
+const StatCard: React.FC<StatCardProps> = ({ label, value, subLabel, type }) => {
+  const config = {
+    overdue: {
+      icon: <AlertCircle size={24} className="text-red-500" />,
+      bgColor: 'bg-red-50',
+      textColor: 'text-red-500',
+    },
+    important: {
+      icon: <Star size={24} className="text-orange-400" fill="currentColor" />,
+      bgColor: 'bg-orange-50',
+      textColor: 'text-orange-400',
+    },
+    progress: {
+      icon: <CheckCircle2 size={24} className="text-emerald-500" />,
+      bgColor: 'bg-emerald-50',
+      textColor: 'text-emerald-500',
+    },
+  };
 
-    {/* Progress Bar (Chỉ hiện nếu có) */}
-    {typeof progress === 'number' && (
-      <div className="mt-2 h-1.5 rounded-full bg-gray-100 overflow-hidden">
-        <div
-          className="h-full rounded-full bg-violet-500 transition-all duration-500"
-          style={{ width: `${progress}%` }}
-        />
+  const { icon, bgColor, textColor } = config[type];
+
+  return (
+    <div className="flex items-center gap-4 bg-white p-5 rounded-2xl border border-gray-100 shadow-sm transition-all hover:shadow-md">
+      <div className={`w-14 h-14 rounded-2xl ${bgColor} flex items-center justify-center shrink-0`}>
+        {icon}
       </div>
-    )}
-
-    {/* Description & Icon Group (Gom nhóm nằm ngang cạnh nhau) */}
-    {(description || icon) && (
-      <div className={`mt-auto pt-4 flex items-center gap-1.5 ${color}`}>
-        {icon && <span className="flex-shrink-0">{icon}</span>}
-        {description && (
-          <p className="text-xs font-medium leading-none">
-            {description}
-          </p>
-        )}
+      <div className="flex flex-col gap-0.5">
+        <span className={`text-[13px] font-[800] uppercase tracking-wider ${textColor}`}>
+          {label}
+        </span>
+        <div className="flex items-baseline gap-2">
+          <span className="text-2xl font-[900] text-slate-800">{value}</span>
+          {subLabel && (
+            <span className={`text-[12px] font-bold ${textColor} opacity-80`}>
+              {subLabel}
+            </span>
+          )}
+        </div>
       </div>
-    )}
-  </div>
-);
+    </div>
+  );
+};
+
+export default StatCard;
