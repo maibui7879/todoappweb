@@ -1,10 +1,10 @@
 ﻿export interface OverviewResponse {
-  completionRate: number;
-  overdue: number;
-  important: number;
+  total: number;
   completed: number;
   pending: number;
-  total: number;
+  overdue: number;
+  important: number;
+  completionRate: number
 }
 
 export interface OverviewStatCardProps {
@@ -44,4 +44,17 @@ export interface StatsResponse {
   overview: OverviewResponse;
   byCategory: ByCategoryResponse[];
   dailyTrend: DailyTrendItem[];
+}
+export interface StatsMeta {
+  period: 'week' | 'month' | 'year';
+  startDate: string;
+  endDate: string;
+}
+
+export interface StatsHeaderProps {
+  period: 'week' | 'month' | 'year';
+  setPeriod: (p: 'week' | 'month' | 'year') => void;
+  dateRange: string;
+  currentDate: string;
+  onDateChange: (date: string) => void;
 }
