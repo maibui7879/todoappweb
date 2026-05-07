@@ -7,7 +7,7 @@ import type {
 } from "axios";
 
 const axiosClient = axios.create({
-  baseURL: "https://sybausuzuka-todoapp.hf.space",
+  baseURL: "http://localhost:3000" || "https://sybausuzuka-todoapp.hf.space",
   headers: {
     "Content-Type": "application/json",
   },

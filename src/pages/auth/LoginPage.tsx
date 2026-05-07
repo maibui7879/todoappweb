@@ -2,7 +2,7 @@
 import { Form, Input, Button, Checkbox, message } from "antd";
 import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-import AuthLayout from "../../components/Auth/AuthLayout";
+import AuthLayout from "../../layouts/AuthLayout";
 import { authApi } from "../../api/auth.api";
 import { useAuth } from "../../contexts/AuthContext";
 

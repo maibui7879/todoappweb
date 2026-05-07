@@ -30,7 +30,7 @@ const StatCard: React.FC<StatCardProps> = ({ label, value, subLabel, type }) => 
   const { icon, bgColor, textColor } = config[type];
 
   return (
-    <div className="flex items-center gap-4 bg-white p-5 rounded-2xl border border-gray-100 shadow-sm transition-all hover:shadow-md">
+    <div className="flex items-center gap-4 bg-white p-5 rounded-2xl border border-2 border-[#C4B5FD] shadow-sm transition-all hover:shadow-md">
       <div className={`w-14 h-14 rounded-2xl ${bgColor} flex items-center justify-center shrink-0`}>
         {icon}
       </div>
