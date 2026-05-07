@@ -1,7 +1,10 @@
 // src/layouts/MainLayout.tsx
+import { useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 
 const MainLayout = () => {
+  const [categoryOpen, setCategoryOpen] = useState(true);
+
   return (
     <div className="flex flex-col h-screen bg-[#F4F6FB]">
       {/* SIDEBAR + CONTENT */}
@@ -36,39 +39,59 @@ const MainLayout = () => {
 
           {/* Nav */}
           <nav className="flex-1 py-3 px-3 flex flex-col gap-0.5 overflow-y-auto">
-            {/* Danh sách việc cần làm */}
             <NavLink
               to="/tasks"
               className={({ isActive }) =>
                 `flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all
-                ${isActive ? "bg-[#EDE9FE] text-[#7C3AED] font-medium" : "text-gray-600 hover:bg-gray-50"}`
+              ${isActive ? "bg-[#EDE9FE] text-[#7C3AED] font-medium" : "text-gray-600 hover:bg-gray-50"}`
               }
             >
               <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
-                <path
-                  d="M9 11l3 3L22 4"
+                <rect
+                  x="3"
+                  y="3"
+                  width="7"
+                  height="7"
+                  rx="1"
                   stroke="currentColor"
                   strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
                 />
-                <path
-                  d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"
+                <rect
+                  x="14"
+                  y="3"
+                  width="7"
+                  height="7"
+                  rx="1"
                   stroke="currentColor"
                   strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
+                />
+                <rect
+                  x="3"
+                  y="14"
+                  width="7"
+                  height="7"
+                  rx="1"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                />
+                <rect
+                  x="14"
+                  y="14"
+                  width="7"
+                  height="7"
+                  rx="1"
+                  stroke="currentColor"
+                  strokeWidth="2"
                 />
               </svg>
               Danh sách việc cần làm
             </NavLink>
 
-            {/* Có gắn dấu sao */}
             <NavLink
               to="/starred"
               className={({ isActive }) =>
                 `flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all
-                ${isActive ? "bg-[#EDE9FE] text-[#7C3AED] font-medium" : "text-gray-600 hover:bg-gray-50"}`
+              ${isActive ? "bg-[#EDE9FE] text-[#7C3AED] font-medium" : "text-gray-600 hover:bg-gray-50"}`
               }
             >
               <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
@@ -83,52 +106,75 @@ const MainLayout = () => {
               Có gắn dấu sao
             </NavLink>
 
-            {/* Thông báo */}
-            <NavLink
-              to="/notifications"
-              className={({ isActive }) =>
-                `flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all
-                ${isActive ? "bg-[#EDE9FE] text-[#7C3AED] font-medium" : "text-gray-600 hover:bg-gray-50"}`
-              }
-            >
-              <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
-                <path
-                  d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M13.73 21a2 2 0 01-3.46 0"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-              Thông báo
-            </NavLink>
+            {/* Danh sách dropdown */}
+            <div>
+              <button
+                onClick={() => setCategoryOpen(!categoryOpen)}
+                className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition-all"
+              >
+                <div className="flex items-center gap-2.5">
+                  <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
+                    <path
+                      d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                  Danh sách
+                </div>
+                <svg
+                  width="14"
+                  height="14"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  className={`transition-transform ${categoryOpen ? "rotate-180" : ""}`}
+                >
+                  <path
+                    d="M6 9l6 6 6-6"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
 
-            {/* Thống kê */}
-            <NavLink
-              to="/stats"
-              className={({ isActive }) =>
-                `flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all
-                ${isActive ? "bg-[#EDE9FE] text-[#7C3AED] font-medium" : "text-gray-600 hover:bg-gray-50"}`
-              }
-            >
-              <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
-                <path
-                  d="M18 20V10M12 20V4M6 20v-6"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-              Thống kê
-            </NavLink>
+              {categoryOpen && (
+                <div className="ml-4 mt-0.5 flex flex-col gap-0.5">
+                  {[
+                    // {
+                    //   to: "/categories",
+                    //   color: "bg-blue-400",
+                    //   label: "Danh mục",
+                    // },
+                    { to: "/stats", 
+                      color: "bg-green-400", 
+                      label: "Thống kê" },
+                    {
+                      to: "/notifications",
+                      color: "bg-orange-400",
+                      label: "Thông báo",
+                    },
+                  ].map(({ to, color, label }) => (
+                    <NavLink
+                      key={to}
+                      to={to}
+                      className={({ isActive }) =>
+                        `flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-all
+                      ${isActive ? "bg-[#EDE9FE] text-[#7C3AED] font-medium" : "text-gray-500 hover:bg-gray-50"}`
+                      }
+                    >
+                      <span
+                        className={`w-2 h-2 rounded-full ${color} flex-shrink-0`}
+                      />
+                      {label}
+                    </NavLink>
+                  ))}
+                </div>
+              )}
+            </div>
           </nav>
         </aside>
 
@@ -138,7 +184,7 @@ const MainLayout = () => {
         </main>
       </div>
 
-      {/* FOOTER */}
+      {/* FOOTER - full width */}
       <footer className="bg-[#C4B5FD] py-3 text-center text-xs text-white w-full flex-shrink-0">
         © 2026 Brand, Inc. • Privacy • Terms • Sitemap
       </footer>
