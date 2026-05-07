@@ -17,7 +17,10 @@ export interface OverviewStatCardProps {
 }
 
 export interface OverviewGridProps {
-  overview: OverviewResponse;
+  overview: OverviewResponse & {
+    currentStreak: number;
+    longestStreak: number;
+  };
 }
 
 export interface MetaResponse {
@@ -57,4 +60,28 @@ export interface StatsHeaderProps {
   dateRange: string;
   currentDate: string;
   onDateChange: (date: string) => void;
+}
+
+export interface DayStatus {
+  date: string;
+  dayOfWeek: number;
+  isActive: boolean;
+}
+
+export interface OverviewStats {
+  currentStreak: number;
+  longestStreak: number;
+  last7DaysStatus: DayStatus[];
+}
+
+export interface ChartTrendItem {
+  label: string;
+  completed: number;
+  percentage: number;
+}
+
+export interface DetailedStats {
+  overview: OverviewResponse;
+  chartTrend: ChartTrendItem[];
+  byCategory: ByCategoryResponse[];
 }

@@ -1,47 +1,78 @@
-import { StatHeader } from '../../components/Stats/StatHeader'; // Import đúng tên StatHeader (không s)
-import { OverviewGrid } from '../../components/Stats/Overview/OverviewGrid';
-//import { StreakCard } from '../../components/Stats/Streak/StreakCard';
-//import { PerformanceChart } from '../../components/Stats/Chart/PerformanceChart';
+import { useState } from 'react';
 import { useStat } from '../../hooks/useStat';
+import { OverviewGrid } from '../../components/Stats/Overview/OverviewGrid';
+import { StatHeader } from '../../components/Stats/StatHeader';
+import { ChartSection } from '../../components/Stats/Chart/ChartSection';
+import { StreakCheckIn } from '../../components/Stats/Streak/StreakCheckIn';
 
-export const StatsPage = () => {
-  // Lấy toàn bộ logic từ Controller (Hook)
-  const { 
-    period, 
-    setPeriod, 
-    dateRange, 
-    currentDate, 
-    onDateChange, 
-    overviewData, 
-    //streakData 
-  } = useStat();
+const StatsPage = () => {
+  const [type, setType] = useState<'week' | 'month' | 'year'>('week');
+  const { overview, details, loading } = useStat(type);
+
+  if (loading || !overview || !details) {
+    return (
+      <div className="p-8 text-center max-w-6xl mx-auto">
+        <p className="text-slate-500">Đang tính toán số liệu...</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-8 bg-[#f8faff] min-h-screen">
-      {/* 1. Header & Filters (Phần bạn khoanh đỏ) */}
-      <StatHeader 
-        period={period} 
-        setPeriod={setPeriod} 
-        dateRange={dateRange}
-        currentDate={currentDate}
-        onDateChange={onDateChange}
-      />
-      
-      {/* 2. Overview Grid (4 thẻ thống kê) */}
-      {overviewData && <OverviewGrid overview={overviewData} />}
-      
-      {/* 3. Streak Card (Thông tin chuỗi ngày)
-      {streakData && <StreakCard streak={streakData} />} */}
-      
-      {/* 4. Chart (Biểu đồ xu hướng) */}
-      <div className="mt-8 bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
-        {/* <PerformanceChart /> */}
+    <div className="max-w-6xl mx-auto p-6 space-y-6">
+      {/* 1. Header & Tabs */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">Thống kê năng suất</h1>
+          <p className="text-slate-500 text-sm">Chào bạn, hãy xem bạn đã nỗ lực thế nào nhé!</p>
+        </div>
+        <div className="flex bg-slate-100 p-1 rounded-xl">
+          {(['week', 'month', 'year'] as const).map((t) => (
+            <button
+              key={t}
+              onClick={() => setType(t)}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                type === t ? 'bg-white shadow-sm text-blue-600' : 'text-slate-500 hover:text-slate-700'
+              }`}
+            >
+              {t === 'week' ? '7 ngày qua' : t === 'month' ? '30 ngày qua' : '12 tháng qua'}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* Footer Quote */}
-      <p className="text-center text-gray-400 mt-12 italic text-sm">
-        "Kỷ luật là cầu nối giữa mục tiêu và thành tựu." — Jim Rohn
-      </p>
+      {/* 2. Thẻ Overview */}
+      <OverviewGrid 
+        overview={{
+          ...details.overview,
+        }} 
+      />
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* 3. Biểu đồ chính (Bên trái) */}
+        <div className="lg:col-span-2">
+          <ChartSection data={details.chartTrend} />
+        </div>
+
+        {/* 4. Streak & Category (Bên phải) */}
+        <div className="space-y-6">
+          <StreakCheckIn status={overview.last7DaysStatus} />
+          
+          <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+            <h3 className="text-lg font-semibold mb-4 text-slate-800">Theo danh mục</h3>
+            <div className="space-y-4">
+              {details.byCategory.map((cat, idx) => (
+                <div key={idx} className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: cat.color }} />
+                    <span className="text-sm font-medium text-slate-600">{cat.name}</span>
+                  </div>
+                  <span className="text-sm font-bold text-slate-900">{cat.completed}/{cat.count}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
