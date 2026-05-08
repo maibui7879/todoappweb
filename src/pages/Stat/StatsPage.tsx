@@ -40,9 +40,8 @@ const StatsPage = () => {
   }, [type, selectedDate]);
 
   return (
-    <div className="max-w-7xl mx-auto p-8 space-y-8 bg-[#F8FAFC] min-h-screen">
-      {/* 1. Header luôn được hiển thị, không bao giờ bị unmount. 
-             Khi đổi type/selectedDate, dải ngày bên trong sẽ tự nhảy ngay lập tức */}
+    // THAY ĐỔI: p-4 cho mobile, sm:p-6 lg:p-8 cho màn hình lớn
+    <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8 bg-[#F8FAFC] min-h-screen">
       <StatHeader 
         type={type} 
         setType={setType} 
@@ -50,15 +49,12 @@ const StatsPage = () => {
         setSelectedDate={setSelectedDate} 
       />
 
-      {/* 2. Xử lý hiển thị Content bên dưới */}
       {(!streakData || !detailedData) ? (
-        // Chỉ hiển thị chữ "Đang tải" ở lần render đầu tiên (khi chưa có data)
         <div className="py-20 flex justify-center items-center text-slate-500 font-medium">
           Đang tải dữ liệu...
         </div>
       ) : (
-        // HIỆU ỨNG: Thêm transform scale-[0.98] và duration-500 ease-out để tạo độ mượt
-        <div className={`space-y-8 transition-all duration-500 ease-out transform ${
+        <div className={`space-y-6 sm:space-y-8 transition-all duration-500 ease-out transform ${
           loading ? 'opacity-40 scale-[0.98] pointer-events-none' : 'opacity-100 scale-100'
         }`}>
           <OverviewGrid 
