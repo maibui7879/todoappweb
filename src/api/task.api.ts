@@ -17,7 +17,9 @@ export const taskApi = {
 
   // Lấy task quan trọng
   getImportant: (): Promise<Task[]> =>
-    axiosClient.get("/tasks", { params: { isImportant: true } }),
+    axiosClient.get("/tasks", {
+      params: { isStarred: true },
+    }),
 
   getOne: (id: string): Promise<Task> => axiosClient.get(`/tasks/${id}`),
 
