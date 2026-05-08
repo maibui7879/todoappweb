@@ -13,14 +13,10 @@ const axiosClient = axios.create({
   },
 });
 
-// ====================
-// REQUEST INTERCEPTOR
-// ====================
 axiosClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const token = localStorage.getItem("token");
 
-    // ❗ KHÔNG gửi token cho login/register
     const isAuthRoute =
       config.url?.includes("/auth/login") ||
       config.url?.includes("/auth/register");
