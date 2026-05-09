@@ -1,16 +1,35 @@
-import { useQuery } from "@tanstack/react-query";
-import { taskApi } from "../../api/task.api";
-import { type Task } from "../../types/task.type";
-import { AlertTriangle, RefreshCw } from "lucide-react";
+// src/pages/overdue/OverduePage.tsx
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+
+import { AlertTriangle } from "lucide-react";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
+
+import { taskApi } from "../../api/task.api";
+import { type Task } from "../../types/task.type";
 
 dayjs.extend(utc);
 
 const OverduePage = () => {
+  const queryClient = useQueryClient();
+
   const { data: tasks = [], isLoading } = useQuery({
     queryKey: ["tasks", "overdue"],
     queryFn: () => taskApi.getOverdue(),
+  });
+
+  // Hoàn thành task
+  const completeMutation = useMutation({
+    mutationFn: (taskId: string) =>
+      taskApi.update(taskId, {
+        isCompleted: true,
+      }),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["tasks"],
+      });
+    },
   });
 
   return (
@@ -45,7 +64,7 @@ const OverduePage = () => {
             </p>
 
             <p className="text-xs text-gray-400 max-w-xs leading-relaxed">
-              Tuyệt vời 🎉 Bạn đã hoàn thành đúng hạn tất cả công việc
+              Tuyệt vời 🎉 Bạn không có công việc nào bị trễ
             </p>
           </div>
         ) : (
@@ -53,10 +72,30 @@ const OverduePage = () => {
             {(tasks as Task[]).map((task) => (
               <div
                 key={task._id}
-                className="bg-white rounded-2xl px-5 py-4 shadow-sm flex items-start gap-3 border border-red-100"
+                className="bg-white rounded-2xl px-5 py-4 shadow-sm border border-red-200 flex items-start gap-3"
               >
-                {/* STATUS */}
-                <div className="w-5 h-5 rounded-full border-2 border-red-400 flex-shrink-0 mt-0.5" />
+                {/* COMPLETE BUTTON */}
+                <button
+                  onClick={() => completeMutation.mutate(task._id)}
+                  disabled={completeMutation.isPending}
+                  className="w-5 h-5 rounded-full border-2 border-red-400 flex items-center justify-center flex-shrink-0 mt-0.5 hover:bg-red-400 transition-colors group"
+                >
+                  <svg
+                    width="10"
+                    height="10"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    className="opacity-0 group-hover:opacity-100"
+                  >
+                    <path
+                      d="M5 13l4 4L19 7"
+                      stroke="white"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </button>
 
                 {/* CONTENT */}
                 <div className="flex-1 min-w-0">
@@ -71,11 +110,11 @@ const OverduePage = () => {
                   )}
 
                   <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-                    <span className="text-xs text-red-600 bg-red-50 px-2 py-0.5 rounded-full font-medium">
+                    <span className="text-xs text-red-500 bg-red-50 px-2 py-0.5 rounded-full font-medium">
                       {dayjs(task.dueDate).utcOffset(7).format("DD/MM/YYYY")}
                     </span>
 
-                    <span className="text-xs text-red-600 bg-red-50 px-2 py-0.5 rounded-full font-medium">
+                    <span className="text-xs text-red-500 bg-red-50 px-2 py-0.5 rounded-full font-medium">
                       {dayjs(task.dueDate).utcOffset(7).format("HH:mm")}
                     </span>
 
@@ -84,18 +123,11 @@ const OverduePage = () => {
                         {task.categoryId.name}
                       </span>
                     )}
-
-                    {task.isVirtual && (
-                      <span className="flex items-center gap-0.5 text-xs text-amber-500">
-                        <RefreshCw size={10} />
-                        Lặp lại
-                      </span>
-                    )}
                   </div>
                 </div>
 
                 {/* BADGE */}
-                <div className="text-xs font-medium text-red-500 bg-red-50 px-2 py-1 rounded-lg">
+                <div className="text-xs font-medium text-red-500 bg-red-50 px-2 py-1 rounded-full">
                   Quá hạn
                 </div>
               </div>
