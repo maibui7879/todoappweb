@@ -1,6 +1,7 @@
 // src/layouts/MainLayout.tsx
 import { useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
+import { Star, AlertTriangle } from "lucide-react";
 
 const MainLayout = () => {
   const [categoryOpen, setCategoryOpen] = useState(true);
@@ -106,6 +107,21 @@ const MainLayout = () => {
               Có gắn dấu sao
             </NavLink>
 
+            <NavLink
+              to="/overdue"
+              className={({ isActive }) =>
+                `flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all
+    ${
+      isActive
+        ? "bg-[#FEE2E2] text-red-500 font-medium"
+        : "text-gray-600 hover:bg-gray-50"
+    }`
+              }
+            >
+              <AlertTriangle size={16} />
+              Quá hạn
+            </NavLink>
+
             {/* Danh sách dropdown */}
             <div>
               <button
@@ -149,9 +165,7 @@ const MainLayout = () => {
                     //   color: "bg-blue-400",
                     //   label: "Danh mục",
                     // },
-                    { to: "/stats", 
-                      color: "bg-green-400", 
-                      label: "Thống kê" },
+                    { to: "/stats", color: "bg-green-400", label: "Thống kê" },
                     {
                       to: "/notifications",
                       color: "bg-orange-400",

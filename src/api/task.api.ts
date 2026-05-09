@@ -9,16 +9,30 @@ export const taskApi = {
     isCompleted?: boolean,
   ): Promise<Task[]> => {
     const params: any = {};
+
     if (startDate) params.startDate = startDate;
     if (endDate) params.endDate = endDate;
-    if (isCompleted !== undefined) params.isCompleted = isCompleted;
+
+    // Ẩn task quá hạn khỏi trang task chính
+    params.isOverdue = false;
+
+    if (isCompleted !== undefined) {
+      params.isCompleted = isCompleted;
+    }
+
     return axiosClient.get("/tasks", { params });
   },
 
-  // Lấy task quan trọng
+  // Lấy task gắn sao
   getImportant: (): Promise<Task[]> =>
     axiosClient.get("/tasks", {
-      params: { isStarred: true },
+      params: { isImportant: true },
+    }),
+
+  // Lấy task quá hạn
+  getOverdue: (): Promise<Task[]> =>
+    axiosClient.get("/tasks", {
+      params: { isOverdue: true },
     }),
 
   getOne: (id: string): Promise<Task> => axiosClient.get(`/tasks/${id}`),
@@ -30,7 +44,9 @@ export const taskApi = {
 
   // Đánh dấu quan trọng (tự động realize nếu là task ảo)
   markImportant: (id: string, isImportant: boolean): Promise<Task> =>
-    axiosClient.patch(`/tasks/${id}/important`, { isImportant }),
+    axiosClient.patch(`/tasks/${id}/important`, {
+      isImportant,
+    }),
 
   delete: (id: string) => axiosClient.delete(`/tasks/${id}`),
 
