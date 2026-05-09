@@ -22,9 +22,9 @@ const StarredPage = () => {
 
   return (
     <div className="min-h-screen bg-[#F4F6FB] flex flex-col">
-      <div className="sticky top-0 z-10 bg-white border-b border-gray-100 px-8 py-4 flex items-center gap-3">
-        <Star size={18} className="text-yellow-400" fill="currentColor" />
-        <h1 className="text-base font-bold text-gray-800">
+      <div className="sticky top-0 z-10 px-8 py-8 flex items-center justify-center gap-3">
+        <Star size={28} className="text-yellow-400" fill="currentColor" />
+        <h1 className="text-base font-bold text-2xl sm:text-[30px] font-[900] text-[#6366F1] flex items-center gap-2">
           Việc cần gắn dấu sao
         </h1>
         {tasks.length > 0 && (

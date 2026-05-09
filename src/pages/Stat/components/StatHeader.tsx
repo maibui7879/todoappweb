@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { Calendar } from "lucide-react";
 import dayjs from "dayjs";
-import { useAuth } from "../../../contexts/AuthContext";
 
 // Import popup lịch mới tạo
 import StatCalendarPopup from "./StatCalendarPopup"; 
@@ -15,7 +14,6 @@ interface StatHeaderProps {
 }
 
 export const StatHeader = ({ type, setType, selectedDate, setSelectedDate }: StatHeaderProps) => {
-  const { user } = useAuth();
   
   // State bật/tắt popup lịch
   const [showCalendar, setShowCalendar] = useState(false);
