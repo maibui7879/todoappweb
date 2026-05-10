@@ -2,7 +2,6 @@ import { useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { LogOut, User } from "lucide-react"; // Import thêm icon
 import { useAuth } from "../contexts/AuthContext"; // Lấy thông tin user
-import { useNotification } from "../hooks/useNotifications"; // Lấy thông báo
 import NotificationPopover from "../pages/noti/components/NotificationPopover";
 
 const MainLayout = () => {

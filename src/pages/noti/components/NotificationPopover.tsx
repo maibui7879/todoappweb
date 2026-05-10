@@ -6,14 +6,9 @@ import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/vi";
-import { toast } from "react-toastify";
 
 dayjs.extend(relativeTime);
 dayjs.locale("vi");
-
-// Link âm thanh (bạn có thể thay bằng file trong public)
-const normalSound = new Audio("https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3");
-const importantSound = new Audio("https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3");
 
 const NotificationPopover = () => {
   const [isOpen, setIsOpen] = useState(false);

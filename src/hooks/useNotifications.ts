@@ -6,8 +6,9 @@ import { useAuth } from '../contexts/AuthContext';
 import { toast } from 'react-toastify';
 
 const SOCKET_URL = 'https://sybausuzuka-todoapp.hf.space';
-const NORMAL_SOUND = '/sounds/normal-notification.mp3';
-const IMPORTANT_SOUND = '/sounds/important-notification.mp3';
+// Link âm thanh (bạn có thể thay bằng file trong public)
+const normalSound = new Audio("https://assets.mixkit.co/active_storage/sfx/2353/2353-preview.mp3");
+const importantSound = new Audio("https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3");
 
 export const useNotification = () => {
   const { user, isLoading } = useAuth();
@@ -15,15 +16,13 @@ export const useNotification = () => {
   const [unreadCount, setUnreadCount] = useState(0);
 
   const playSound = (isImportant: boolean) => {
-    const audio = new Audio(isImportant ? IMPORTANT_SOUND : NORMAL_SOUND);
+    const audio = isImportant ? importantSound : normalSound;
     audio.play().catch(() => {}); // Tránh lỗi nếu trình duyệt chặn autoplay
   };
 
   const loadHistory = useCallback(async (query?: NotificationQuery) => {
     try {
-      console.log('📲 Đang tải lịch sử thông báo...', query);
       const response = await notificationApi.getAll(query);
-      console.log('✅ Raw response từ API:', response);
       
       // Handle 2 case: response là array hoặc object có property notifications
       let notifData: Notification[] = [];
@@ -38,23 +37,19 @@ export const useNotification = () => {
       setUnreadCount(unread);
       console.log('📊 Tổng thông báo:', notifData.length, '| Chưa đọc:', unread);
     } catch (error) {
-      console.error('❌ Lỗi khi tải lịch sử thông báo:', error);
     }
   }, []);
 
   useEffect(() => {
     // Đợi cho tới khi auth đã load xong
     if (isLoading) {
-      console.log('⏳ Đang chờ auth load...');
       return;
     }
     
     if (!user?.id) {
-      console.log('❌ Không có user, bỏ qua notification');
       return;
     }
     
-    console.log('👤 User đã login, tải thông báo...', user.id);
     loadHistory({ limit: 50 });
     // Kết nối Socket.IO
     const socketInstance = io(SOCKET_URL, {
@@ -63,7 +58,6 @@ export const useNotification = () => {
     console.log('🔌 Socket kết nối...');
 
     socketInstance.on('new-notification', (newNotif: Notification) => {
-      console.log('🔔 Thông báo mới:', newNotif);
       setNotifications((prev) => [newNotif, ...prev]);
       if (!newNotif.isRead) setUnreadCount((prev) => prev + 1);
       
@@ -77,7 +71,6 @@ export const useNotification = () => {
     });
 
     return () => { 
-      console.log('❌ Socket ngắt kết nối');
       socketInstance.disconnect(); 
     };
   }, [user?.id, isLoading, loadHistory]);
