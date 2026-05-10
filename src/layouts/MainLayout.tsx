@@ -1,14 +1,15 @@
 import { useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { Bell, LogOut, User } from "lucide-react"; // Import thêm icon
+import { LogOut, User } from "lucide-react"; // Import thêm icon
 import { useAuth } from "../contexts/AuthContext"; // Lấy thông tin user
 import { useNotification } from "../hooks/useNotifications"; // Lấy thông báo
+import NotificationPopover from "../pages/noti/components/NotificationPopover";
 
 const MainLayout = () => {
   const [categoryOpen, setCategoryOpen] = useState(true);
   const navigate = useNavigate();
   const { user, logout } = useAuth(); // Lấy hàm logout và thông tin user
-  const { unreadCount } = useNotification(); // Lấy số thông báo chưa đọc
+  // const { unreadCount } = useNotification(); // Lấy số thông báo chưa đọc
 
   return (
     <div className="flex flex-col h-screen bg-[#F4F6FB]">
@@ -19,19 +20,8 @@ const MainLayout = () => {
         </span>
         
         <div className="flex items-center gap-2">
-          {/* Nút thông báo nhanh */}
-          <button
-            onClick={() => navigate("/notifications")}
-            className="relative w-10 h-10 flex items-center justify-center rounded-xl text-gray-500 hover:bg-gray-100 hover:text-[#8B5CF6] transition-colors"
-            title="Thông báo"
-          >
-            <Bell size={20} />
-            {unreadCount > 0 && (
-              <span className="absolute top-2 right-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white border-2 border-white">
-                {unreadCount > 9 ? '9+' : unreadCount}
-              </span>
-            )}
-          </button>
+          {/* Thông báo Popover */}
+        <NotificationPopover />
 
           {/* Đăng xuất */}
           <button
