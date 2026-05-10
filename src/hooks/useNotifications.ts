@@ -56,7 +56,7 @@ export const useNotification = () => {
     
     console.log('👤 User đã login, tải thông báo...', user.id);
     loadHistory({ limit: 50 });
-
+    // Kết nối Socket.IO
     const socketInstance = io(SOCKET_URL, {
       query: { userId: user.id },
     });
@@ -81,7 +81,7 @@ export const useNotification = () => {
       socketInstance.disconnect(); 
     };
   }, [user?.id, isLoading, loadHistory]);
-
+  //đánh dấu đọc khi click vào thông báo 
   const readNotification = async (id: string) => {
     setNotifications((prev) =>
       prev.map((n) => (n._id === id ? { ...n, isRead: true } : n))
@@ -93,7 +93,7 @@ export const useNotification = () => {
       console.error('Lỗi khi đánh dấu đã đọc:', error);
     }
   };
-
+  // Đánh dấu tất cả là đã đọc
   const markAllAsRead = async () => {
     setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
     setUnreadCount(0);
