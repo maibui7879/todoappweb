@@ -23,12 +23,20 @@ export const useNotification = () => {
     try {
       console.log('📲 Đang tải lịch sử thông báo...', query);
       const response = await notificationApi.getAll(query);
-      console.log('✅ Lịch sử thông báo:', response);
-      setNotifications(response.notifications);
-      // Tính unreadCount từ mảng notifications (backend không return)
-      const unread = response.notifications.filter((n: Notification) => !n.isRead).length;
+      console.log('✅ Raw response từ API:', response);
+      
+      // Handle 2 case: response là array hoặc object có property notifications
+      let notifData: Notification[] = [];
+      if (Array.isArray(response)) {
+        notifData = response;
+      } else if (response?.notifications) {
+        notifData = response.notifications;
+      }
+      
+      setNotifications(notifData);
+      const unread = notifData.filter((n: Notification) => !n.isRead).length;
       setUnreadCount(unread);
-      console.log('📊 Tổng thông báo:', response.notifications.length, '| Chưa đọc:', unread);
+      console.log('📊 Tổng thông báo:', notifData.length, '| Chưa đọc:', unread);
     } catch (error) {
       console.error('❌ Lỗi khi tải lịch sử thông báo:', error);
     }
