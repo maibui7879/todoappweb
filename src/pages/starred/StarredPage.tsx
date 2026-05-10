@@ -1,4 +1,3 @@
-// src/pages/starred/StarredPage.tsx
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { taskApi } from "../../api/task.api";
 import { type Task } from "../../types/task.type";
@@ -47,26 +46,26 @@ const StarredPage = () => {
   });
 
   return (
-    <div className="min-h-screen bg-[#F4F6FB] flex flex-col">
-      {/* Header */}
-      <div className="sticky top-0 z-10 bg-white border-b border-gray-100 px-8 py-4 flex items-center gap-3">
-        <Star size={18} className="text-yellow-400" fill="currentColor" />
+    <div className="w-full">
+      {/* THAY ĐỔI: Bỏ sticky top-0 và z-10 để không bị chui xuống dưới Header chung */}
+      <div className="px-8 py-10 flex items-center justify-center gap-4">
+        <Star size={32} className="text-yellow-400" fill="currentColor" />
 
-        <h1 className="text-base font-bold text-gray-800">
+        <h1 className="text-3xl font-black text-[#6366F1]">
           Việc cần gắn dấu sao
         </h1>
 
         {tasks.length > 0 && (
-          <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">
+          <span className="text-sm font-bold text-gray-400 bg-gray-100 px-3 py-1 rounded-full">
             {tasks.length}
           </span>
         )}
       </div>
 
-      {/* Content */}
-      <div className="flex-1 px-8 py-8 max-w-2xl w-full mx-auto">
+      {/* THAY ĐỔI: Căn giữa danh sách và tạo khoảng cách hợp lý */}
+      <div className="px-8 pb-10 max-w-2xl w-full mx-auto">
         {isLoading ? (
-          <div className="flex items-center justify-center py-16 text-gray-400 text-sm">
+          <div className="flex items-center justify-center py-16 text-gray-400 text-sm italic">
             Đang tải...
           </div>
         ) : tasks.length === 0 ? (
@@ -87,7 +86,7 @@ const StarredPage = () => {
             {(tasks as Task[]).map((task) => (
               <div
                 key={task._id}
-                className="bg-white rounded-2xl px-5 py-4 shadow-sm flex items-start gap-3"
+                className="bg-white rounded-2xl px-5 py-4 shadow-sm flex items-start gap-3 border border-transparent hover:border-gray-100 transition-all"
               >
                 {/* COMPLETE BUTTON */}
                 <button
@@ -163,10 +162,10 @@ const StarredPage = () => {
                 <button
                   onClick={() => unimportantMutation.mutate(task._id)}
                   disabled={unimportantMutation.isPending}
-                  className="text-yellow-400 hover:text-gray-300 transition-colors p-1 flex-shrink-0"
+                  className="text-yellow-400 hover:scale-110 transition-transform p-1 flex-shrink-0"
                   title="Bỏ gắn dấu sao"
                 >
-                  <Star size={16} fill="currentColor" />
+                  <Star size={18} fill="currentColor" />
                 </button>
               </div>
             ))}

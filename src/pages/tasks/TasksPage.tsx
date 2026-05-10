@@ -2,7 +2,6 @@
 import { useState, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../contexts/AuthContext";
 import { categoryApi } from "../../api/category.api";
 import { type Task } from "../../types/task.type";
 import { type Category } from "../../types/category.type";
@@ -10,9 +9,7 @@ import {
   Plus,
   ChevronLeft,
   ChevronRight,
-  Bell,
-  LogOut,
-  User,
+
 } from "lucide-react";
 import dayjs from "dayjs";
 import "dayjs/locale/vi";
@@ -47,8 +44,7 @@ const getRangeLabel = (date: dayjs.Dayjs, range: RangeType): string => {
 };
 
 const TasksPage = () => {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
+  // const { user, logout } = useAuth();
   const scrollRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
   const startX = useRef(0);
@@ -120,39 +116,6 @@ const TasksPage = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#F4F6FB]">
-      {/* HEADER */}
-      <div className="sticky top-0 z-10 bg-white border-b border-gray-100 px-8 py-3 flex items-center justify-between">
-        <span className="text-sm font-semibold text-[#8B5CF6] tracking-wide">
-          XIN CHÀO, {(user?.fullName || user?.email || "USER").toUpperCase()}
-        </span>
-        <div className="flex items-center gap-1">
-          {/* Thông báo */}
-          <button
-            onClick={() => navigate("/notifications")}
-            className="w-9 h-9 flex items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 hover:text-[#8B5CF6] transition-colors"
-            title="Thông báo"
-          >
-            <Bell size={18} />
-          </button>
-          {/* Đăng xuất */}
-          <button
-            onClick={() => logout()}
-            className="w-9 h-9 flex items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 hover:text-red-500 transition-colors"
-            title="Đăng xuất"
-          >
-            <LogOut size={18} />
-          </button>
-          {/* Trang cá nhân */}
-          <button
-            onClick={() => navigate("/profile")}
-            className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 hover:bg-[#EDE9FE] text-gray-500 hover:text-[#8B5CF6] transition-colors ml-1"
-            title="Trang cá nhân"
-          >
-            <User size={18} />
-          </button>
-        </div>
-      </div>
-
       {/* HERO */}
       <div className="bg-[#ECEDF8]">
         <div className="w-full px-16 py-10 grid grid-cols-[1fr,1.3fr] gap-8 items-center">

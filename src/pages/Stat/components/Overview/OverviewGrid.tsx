@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+// src/pages/Stats/components/Overview/OverviewGrid.tsx
+import React, { useState, useEffect } from 'react';
 import StatCard from './StatCard';
 import type { OverviewResponse } from '../../../../types/stat.type';
 
@@ -7,7 +8,6 @@ interface OverviewGridProps {
 }
 
 export const OverviewGrid: React.FC<OverviewGridProps> = ({ overview }) => {
-  // Bóc tách dữ liệu
   const {
     total = 0,
     completed = 0,
@@ -17,38 +17,50 @@ export const OverviewGrid: React.FC<OverviewGridProps> = ({ overview }) => {
     completionRate = 0
   } = overview || {};
 
-  // Trạng thái hover
   const [hoveredPart, setHoveredPart] = useState<'completed' | 'uncompleted' | null>(null);
-
-  // Thông số SVG
-  const size = 200;              
-  const baseStrokeWidth = 25; 
-  const hoverStrokeWidth = 32; 
   
+  // STATE ANIMATION VÒNG TRÒN
+  const [animatedRate, setAnimatedRate] = useState(0);
+
+  useEffect(() => {
+    // Reset về 0 khi đổi tab, sau đó vẽ từ từ lên rate thật
+    setAnimatedRate(0);
+    const timer = setTimeout(() => {
+      setAnimatedRate(completionRate);
+    }, 100); // Đợi UI render xong rồi mới kích hoạt CSS transition
+    return () => clearTimeout(timer);
+  }, [completionRate]);
+
+  const size = 200;              
+  const baseStrokeWidth = 22; 
+  const hoverStrokeWidth = 28; 
   const center = size / 2;
   const radius = center - baseStrokeWidth;
   const circumference = 2 * Math.PI * radius; 
-  const gapLength = 5; 
+  const gapLength = 8; 
 
-  let arc1Length = (completionRate / 100) * circumference - gapLength;
-  let arc2Length = ((100 - completionRate) / 100) * circumference - gapLength;
+  // Thay completionRate bằng animatedRate để tạo hiệu ứng vẽ
+  let arc1Length = (animatedRate / 100) * circumference - gapLength;
+  let arc2Length = ((100 - animatedRate) / 100) * circumference - gapLength;
 
   if (arc1Length < 0) arc1Length = 0;
   if (arc2Length < 0) arc2Length = 0;
 
   const arc1Angle = (gapLength / 2) / circumference * 360;
-  const arc2Angle = ((completionRate / 100) * circumference + gapLength / 2) / circumference * 360;
+  const arc2Angle = ((animatedRate / 100) * circumference + gapLength / 2) / circumference * 360;
 
-  
   const displayPercent = hoveredPart === 'uncompleted' ? (100 - completionRate) : completionRate;
   const displayLabel = hoveredPart === 'uncompleted' ? 'Chưa xong' : 'Hoàn thành';
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8 font-['Archivo'] " >
-      <div className="lg:col-span-2 bg-white p-8 rounded-[32px] shadow-sm flex flex-col items-center justify-center min-h-[300px] border border-2 border-[#C4B5FD] transition-all hover:shadow-md">
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8 font-['Archivo']">
+      {/* Sửa viền: border border-slate-100 */}
+      <div className="lg:col-span-2 bg-white p-8 rounded-[32px] shadow-sm flex flex-col items-center justify-center min-h-[300px] border border-slate-100 transition-all hover:shadow-md">
         <div className="w-full mb-6 text-left">
-          <h1 className="text-xl font-[800] text-indigo-900">Tỷ lệ hoàn thành</h1>
-          <p className="text-indigo-400 text-sm font-medium">Tiến độ hoàn thành tasks tính đến thời điểm hiện tại</p>
+          {/* CẬP NHẬT: Màu tím sáng text-[#8B5CF6] thay cho text-indigo-900 */}
+          <h1 className="text-[22px] font-[900] text-[#8B5CF6]">Tỷ lệ hoàn thành</h1>
+          {/* CẬP NHẬT: Màu tím nhạt text-[#A78BFA] thay cho text-indigo-400 và sửa chữ */}
+          <p className="text-[#A78BFA] text-sm font-medium mt-1">Tiến độ đạt được tính đến thời điểm hiện tại</p>
         </div>
         
         <div className="relative flex items-center justify-center flex-1 w-full">
@@ -61,19 +73,16 @@ export const OverviewGrid: React.FC<OverviewGridProps> = ({ overview }) => {
                 </linearGradient>
               </defs>
 
-              {/* Phần hoàn thành */}
-              {completionRate > 0 && (
+              {animatedRate > 0 && (
                 <circle
-                  cx={center}
-                  cy={center}
-                  r={radius}
-                  fill="none"
+                  cx={center} cy={center} r={radius} fill="none"
                   stroke="url(#gradientColor)"
                   strokeWidth={hoveredPart === 'completed' ? hoverStrokeWidth : baseStrokeWidth}
                   strokeDasharray={`${arc1Length} ${circumference}`}
                   transform={`rotate(${arc1Angle} ${center} ${center})`}
+                  // HIỆU ỨNG: transition 1.5s ease-out cho mượt
                   style={{ 
-                    transition: 'all 0.3s ease', 
+                    transition: 'stroke-dasharray 1.5s cubic-bezier(0.4, 0, 0.2, 1), stroke-width 0.3s ease', 
                     cursor: 'pointer',
                     opacity: hoveredPart === 'uncompleted' ? 0.4 : 1 
                   }}
@@ -82,19 +91,14 @@ export const OverviewGrid: React.FC<OverviewGridProps> = ({ overview }) => {
                 />
               )}
 
-              {/* Phần chưa hoàn thành */}
-              {completionRate < 100 && (
+              {animatedRate < 100 && (
                 <circle
-                  cx={center}
-                  cy={center}
-                  r={radius}
-                  fill="none"
-                  stroke="#C4B5FD"
+                  cx={center} cy={center} r={radius} fill="none" stroke="#E0E7FF"
                   strokeWidth={hoveredPart === 'uncompleted' ? hoverStrokeWidth : baseStrokeWidth}
                   strokeDasharray={`${arc2Length} ${circumference}`} 
                   transform={`rotate(${arc2Angle} ${center} ${center})`} 
                   style={{ 
-                    transition: 'all 0.3s ease', 
+                    transition: 'stroke-dasharray 1.5s cubic-bezier(0.4, 0, 0.2, 1), stroke-width 0.3s ease', 
                     cursor: 'pointer',
                     opacity: hoveredPart === 'completed' ? 0.4 : 1
                   }}
@@ -104,9 +108,8 @@ export const OverviewGrid: React.FC<OverviewGridProps> = ({ overview }) => {
               )}
             </svg>
 
-            {/* Khối văn bản trung tâm */}
             <div className="absolute inset-0 flex flex-col items-center justify-center mt-2 pointer-events-none transition-all duration-300">
-              <span className={`text-[30px] font-[900] tracking-tighter leading-none transition-colors ${hoveredPart === 'uncompleted' ? 'text-indigo-400' : 'text-slate-800'}`}>
+              <span className={`text-[42px] font-[900] tracking-tighter leading-none transition-colors ${hoveredPart === 'uncompleted' ? 'text-indigo-300' : 'text-slate-800'}`}>
                 {displayPercent}%
               </span>
               <span className="text-[11px] font-[800] text-slate-400 uppercase tracking-widest mt-2">
@@ -120,7 +123,8 @@ export const OverviewGrid: React.FC<OverviewGridProps> = ({ overview }) => {
       <div className="flex flex-col gap-4">
         <StatCard label="Quá Hạn" value={overdue} subLabel="Cần xử lý ngay" type="overdue" />
         <StatCard label="Quan Trọng" value={important} subLabel="Có gắn dấu sao" type="important" />
-        <StatCard label="Tiến độ" value={`${completed}/${total}`} subLabel={`${pending} việc đang chờ hoàn thành`} type="progress" />
+        {/* Sửa lại text subLabel cho khớp y hệt ảnh */}
+        <StatCard label="Tiến độ" value={`${completed}/${total}`} subLabel={`${pending} nhiệm vụ đang chờ được hoàn thành`} type="progress" />
       </div>
     </div>
   );

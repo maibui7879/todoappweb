@@ -1,26 +1,68 @@
-// src/layouts/MainLayout.tsx
 import { useState } from "react";
-import { NavLink, Outlet } from "react-router-dom";
-import { Star, AlertTriangle } from "lucide-react";
+
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
+
+import { Bell, LogOut, User, AlertTriangle, Star } from "lucide-react";
+
+import { useAuth } from "../contexts/AuthContext";
+import { useNotification } from "../hooks/useNotifications";
 
 const MainLayout = () => {
   const [categoryOpen, setCategoryOpen] = useState(true);
+  const navigate = useNavigate();
+  const { user, logout } = useAuth(); // Lấy hàm logout và thông tin user
+  const { unreadCount } = useNotification(); // Lấy số thông báo chưa đọc
 
   return (
     <div className="flex flex-col h-screen bg-[#F4F6FB]">
+      {/* HEADER - Đã được đẩy ra MainLayout để dùng chung */}
+      <header className="h-16 bg-white border-b border-gray-100 px-8 flex items-center justify-between sticky top-0 z-20 w-full flex-shrink-0">
+        <span className="text-sm font-semibold text-[#8B5CF6] tracking-wide uppercase">
+          Xin chào, {user?.fullName || user?.email || "User"}
+        </span>
+
+        <div className="flex items-center gap-2">
+          {/* Nút thông báo nhanh */}
+          <button
+            onClick={() => navigate("/notifications")}
+            className="relative w-10 h-10 flex items-center justify-center rounded-xl text-gray-500 hover:bg-gray-100 hover:text-[#8B5CF6] transition-colors"
+            title="Thông báo"
+          >
+            <Bell size={20} />
+            {unreadCount > 0 && (
+              <span className="absolute top-2 right-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white border-2 border-white">
+                {unreadCount > 9 ? "9+" : unreadCount}
+              </span>
+            )}
+          </button>
+
+          {/* Đăng xuất */}
+          <button
+            onClick={() => logout()}
+            className="w-10 h-10 flex items-center justify-center rounded-xl text-gray-500 hover:bg-red-50 hover:text-red-500 transition-colors"
+            title="Đăng xuất"
+          >
+            <LogOut size={20} />
+          </button>
+
+          {/* Trang cá nhân */}
+          <button
+            onClick={() => navigate("/profile")}
+            className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 border border-gray-200 text-gray-600 hover:bg-[#EDE9FE] hover:text-[#8B5CF6] transition-all ml-1"
+            title="Trang cá nhân"
+          >
+            <User size={20} />
+          </button>
+        </div>
+      </header>
+
       {/* SIDEBAR + CONTENT */}
       <div className="flex flex-1 overflow-hidden">
         {/* SIDEBAR */}
         <aside className="w-[220px] flex-shrink-0 bg-white border-r border-gray-100 flex flex-col h-full">
           {/* Logo */}
           <div className="flex items-center gap-2 px-5 py-4 border-b border-gray-100">
-            <svg
-              width="32"
-              height="32"
-              viewBox="0 0 100 100"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
+            <svg width="32" height="32" viewBox="0 0 100 100" fill="none">
               <path
                 d="M20 25C20 15 30 10 40 10V90C30 90 20 80 20 70V25Z"
                 fill="#0099E5"
@@ -198,9 +240,8 @@ const MainLayout = () => {
         </main>
       </div>
 
-      {/* FOOTER - full width */}
       <footer className="bg-[#C4B5FD] py-3 text-center text-xs text-white w-full flex-shrink-0">
-        © 2026 Brand, Inc. • Privacy • Terms • Sitemap
+        © 2026 Brand, Inc. • Privacy • Terms
       </footer>
     </div>
   );
