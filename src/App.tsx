@@ -8,6 +8,7 @@ import TasksPage from "./pages/tasks/TasksPage";
 import StarredPage from "./pages/starred/StarredPage";
 import StatsPage from "./pages/Stat/StatsPage";
 import OverduePage from "./pages/overdue/OverduePage";
+import NotificationsPage from "./pages/noti/notiPage";
 
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated, isLoading } = useAuth();
