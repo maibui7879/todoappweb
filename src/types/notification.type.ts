@@ -3,18 +3,19 @@ export interface Notification {
   title: string;
   message: string;
   isRead: boolean;
-  taskId?: string; // để điều hướng tới chi tiết task
+  isImportant: boolean; // Để phân biệt màu sắc và nhạc
+  taskId?: string;      // Dùng để điều hướng khi click
   userId: string;
   createdAt: string;
-  isImportant: boolean;
 }
-
 export interface NotificationResponse {
   notifications: Notification[];
   unreadCount: number;
 }
 export interface NotificationQuery {
-  keyword?: string;
   isImportant?: boolean;
+  isRead?: boolean;
+  limit?: number; 
+  keyword?: string; 
   taskId?: string;
 }

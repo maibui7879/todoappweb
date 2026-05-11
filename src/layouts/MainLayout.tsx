@@ -1,11 +1,11 @@
 import { useState } from "react";
 
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { LogOut, User, AlertTriangle } from "lucide-react"; // Import thêm icon
+import { useAuth } from "../contexts/AuthContext"; // Lấy thông tin user
+import NotificationPopover from "../pages/noti/components/NotificationPopover";
+import { useNotification } from "../hooks/useNotifications"; 
 
-import { Bell, LogOut, User, AlertTriangle, Star } from "lucide-react";
-
-import { useAuth } from "../contexts/AuthContext";
-import { useNotification } from "../hooks/useNotifications";
 
 const MainLayout = () => {
   const [categoryOpen, setCategoryOpen] = useState(true);
@@ -16,25 +16,14 @@ const MainLayout = () => {
   return (
     <div className="flex flex-col h-screen bg-[#F4F6FB]">
       {/* HEADER - Đã được đẩy ra MainLayout để dùng chung */}
-      <header className="h-16 bg-white border-b border-gray-100 px-8 flex items-center justify-between sticky top-0 z-20 w-full flex-shrink-0">
-        <span className="text-sm font-semibold text-[#8B5CF6] tracking-wide uppercase">
+      <header className="h-16 bg-white border-b border-gray-100 px-8 flex items-center justify-between sticky top-0 z-[99999] w-full flex-shrink-0">
+        <span className="text-lg font-semibold text-[#8B5CF6] tracking-wide uppercase">
           Xin chào, {user?.fullName || user?.email || "User"}
         </span>
-
-        <div className="flex items-center gap-2">
-          {/* Nút thông báo nhanh */}
-          <button
-            onClick={() => navigate("/notifications")}
-            className="relative w-10 h-10 flex items-center justify-center rounded-xl text-gray-500 hover:bg-gray-100 hover:text-[#8B5CF6] transition-colors"
-            title="Thông báo"
-          >
-            <Bell size={20} />
-            {unreadCount > 0 && (
-              <span className="absolute top-2 right-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white border-2 border-white">
-                {unreadCount > 9 ? "9+" : unreadCount}
-              </span>
-            )}
-          </button>
+        
+        <div className="flex items-center gap-6">
+          {/* Thông báo Popover */}
+        <NotificationPopover />
 
           {/* Đăng xuất */}
           <button
@@ -42,7 +31,7 @@ const MainLayout = () => {
             className="w-10 h-10 flex items-center justify-center rounded-xl text-gray-500 hover:bg-red-50 hover:text-red-500 transition-colors"
             title="Đăng xuất"
           >
-            <LogOut size={20} />
+            <LogOut size={36} />
           </button>
 
           {/* Trang cá nhân */}
