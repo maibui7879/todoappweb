@@ -13,7 +13,7 @@ const MainLayout = () => {
   return (
     <div className="flex flex-col h-screen bg-[#F4F6FB]">
       {/* HEADER */}
-      <header className="h-16 bg-white border-b border-gray-100 px-8 flex items-center justify-between sticky top-0 z-[99999] w-full flex-shrink-0">
+      <header className="h-16 bg-white border-b border-gray-100 px-8 flex items-center justify-between sticky top-0 z-[99] w-full flex-shrink-0">
         <span className="text-lg font-semibold text-[#8B5CF6] tracking-wide uppercase">
           Xin chào, {user?.fullName || user?.email || "User"}
         </span>

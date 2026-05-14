@@ -33,11 +33,12 @@ const TaskDetail = ({ task, dateStr, onClose }: TaskDetailProps) => {
   });
 
   // Cập nhật master task (cho cả virtual task)
-  const updateMutation = useMutation({
+const updateMutation = useMutation({
     mutationFn: (data: any) => {
       if (task.isVirtual) {
-        // Sửa master task thay vì realize
-        return taskApi.update(task.masterId!.toString(), data);
+        // Lấy đúng ngày gốc của task ảo để realize
+        const originalDate = dayjs(task.dueDate).format("YYYY-MM-DDTHH:mm:ss") + "+07:00";
+        return taskApi.realize(task.masterId!.toString(), originalDate, data);
       }
       return taskApi.update(task._id, data);
     },
@@ -46,6 +47,7 @@ const TaskDetail = ({ task, dateStr, onClose }: TaskDetailProps) => {
       onClose();
     },
   });
+
 
   const deleteMutation = useMutation({
     mutationFn: () => {
@@ -71,7 +73,7 @@ const TaskDetail = ({ task, dateStr, onClose }: TaskDetailProps) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-30 p-4">
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[100] p-4">
       <div className="bg-white rounded-2xl shadow-xl w-[380px]">
         <div className="flex items-center justify-between px-5 pt-5 pb-3 border-b border-gray-100">
           <h3 className="font-bold text-gray-800">Chi tiết công việc</h3>
@@ -104,17 +106,18 @@ const TaskDetail = ({ task, dateStr, onClose }: TaskDetailProps) => {
             <span className="text-xs text-gray-500">
               {task.isCompleted ? "Đã hoàn thành" : "Chưa hoàn thành"}
             </span>
-            {task.isVirtual && (
+            {(task.isVirtual || !!task.masterId) && (
               <span className="flex items-center gap-1 text-xs text-amber-500 ml-auto">
                 <RefreshCw size={10} /> Task lặp lại
               </span>
             )}
           </div>
 
-          {task.isVirtual && (
+          {(task.isVirtual || !!task.masterId) && (
             <div className="bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 text-xs text-amber-700">
-              Sửa/xóa task này sẽ ảnh hưởng{" "}
-              <strong>toàn bộ quy tắc lặp lại</strong>
+              {task.isVirtual 
+                ? "Sửa task này sẽ tách nó thành một bản ghi độc lập trong ngày này (nhưng vẫn giữ nhãn lặp lại)." 
+                : "Đây là một công việc đã được tách ra từ một chuỗi lặp lại."}
             </div>
           )}
 
