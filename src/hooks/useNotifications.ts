@@ -68,9 +68,9 @@ export const useNotification = () => {
         position: 'bottom-right',
         autoClose : 8000,
         style: {
-          background: newNotif.isImportant ? '#ffe6e6' : '#e6f7ff',
-          color: newNotif.isImportant ? 'rgb(145, 36, 199)' : '#4b54b8',
-          border: newNotif.isImportant ? '1px solid rgb(0, 170, 119)' : '1px solid #121a68',
+          background: newNotif.isImportant ? '#ffffff' : '#ffffff',
+          color: newNotif.isImportant ? 'rgb(152, 46, 118)' : '#4b54b8',
+          border: newNotif.isImportant ? '1px solid rgb(164, 0, 170)' : '1px solid #121a68',
         }
       });
 
