@@ -2,8 +2,8 @@
 import { useState } from "react";
 import { X } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { categoryApi } from "../../api/category.api";
-import { type Category } from "../../types/category.type";
+import { categoryApi } from "../../../../api/category.api";
+import { type Category } from "../../../../types/category.type";
 
 const COLORS = [
   "#8B5CF6",

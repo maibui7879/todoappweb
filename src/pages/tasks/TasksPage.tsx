@@ -13,9 +13,10 @@ import {
 } from "lucide-react";
 import dayjs from "dayjs";
 import "dayjs/locale/vi";
-import CategoryCard from "../../components/Category/CategoryCard";
-import CategoryModal from "../../components/Category/CategoryModal";
+import CategoryCard from "./components/Category/CategoryCard";
+import CategoryModal from "./components/Category/CategoryModal";
 import AddTaskInput from "./components/AddTaskInput";
+import TaskDetail from "./components/TaskDetail";
 import { useTasksByRange } from "../../hooks/useTasksByRange";
 dayjs.locale("vi");
 
@@ -80,7 +81,7 @@ const TasksPage = () => {
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [activeCategoryName, setActiveCategoryName] = useState("");
-
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const isCompleted = filterStatus === "done";
 
   const { tasks, isLoading, startDate } = useTasksByRange(
@@ -310,6 +311,7 @@ const TasksPage = () => {
                       setShowTaskModal(true);
                     }}
                     onEdit={() => setEditingCategory(cat)}
+                    onTaskClick={(task: Task) => setSelectedTask(task)}
                   />
                 </div>
               ))}
@@ -329,6 +331,7 @@ const TasksPage = () => {
                       setShowTaskModal(true);
                     }}
                     onEdit={() => {}}
+                    onTaskClick={(task: Task) => setSelectedTask(task)}
                   />
                 </div>
               )}
@@ -367,6 +370,14 @@ const TasksPage = () => {
           categoryName={activeCategoryName}
           selectedDate={selectedDate}
           onClose={() => setShowTaskModal(false)}
+        />
+      )}
+
+      {selectedTask && (
+        <TaskDetail
+          task={selectedTask}
+          dateStr={startDate}
+          onClose={() => setSelectedTask(null)}
         />
       )}
     </div>

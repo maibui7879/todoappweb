@@ -99,7 +99,7 @@ const TaskItem = ({ task, dateStr, onClick }: TaskItemProps) => {
           <span className="text-xs text-green-600 bg-green-50 px-2 py-0.5 rounded-full font-medium">
             {dayjs(task.dueDate).utcOffset(7).format("HH:mm")}
           </span>
-          {task.isVirtual && (
+        {(task.isVirtual || !!task.masterId) && (
             <span className="flex items-center gap-0.5 text-xs text-amber-500">
               <RefreshCw size={10} /> Lặp lại
             </span>

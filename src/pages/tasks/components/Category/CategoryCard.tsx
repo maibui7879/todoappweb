@@ -2,12 +2,13 @@
 import { useState, useRef } from "react";
 import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { categoryApi } from "../../api/category.api";
-import { taskApi } from "../../api/task.api";
-import { type Category } from "../../types/category.type";
-import { type Task } from "../../types/task.type";
-import TaskList from "../../pages/tasks/components/TaskList";
-import TaskDetail from "../../pages/tasks/components/TaskDetail";
+import { categoryApi } from "../../../../api/category.api";
+import { taskApi } from "../../../../api/task.api";
+import { type Category } from "../../../../types/category.type";
+import { type Task } from "../../../../types/task.type";
+import TaskList from "../TaskList";
+// Bạn có thể xóa dòng import TaskDetail đi vì không cần dùng ở đây nữa
+// import TaskDetail from "../TaskDetail"; 
 import CategoryDetailModal from "./CategoryDetailModal";
 
 interface CategoryCardProps {
@@ -16,6 +17,7 @@ interface CategoryCardProps {
   dateStr: string;
   onAddTask: () => void;
   onEdit: () => void;
+  onTaskClick?: (task: Task) => void;
 }
 
 const CategoryCard = ({
@@ -24,18 +26,18 @@ const CategoryCard = ({
   dateStr,
   onAddTask,
   onEdit,
+  onTaskClick, // [SỬA Ở ĐÂY] Thêm onTaskClick vào destructured props
 }: CategoryCardProps) => {
   const queryClient = useQueryClient();
   const [showMenu, setShowMenu] = useState(false);
   const [menuPos, setMenuPos] = useState({ top: 0, left: 0 });
-  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [showDetail, setShowDetail] = useState(false);
+  // [SỬA Ở ĐÂY] Xóa dòng useState của selectedTask đi
+  // const [selectedTask, setSelectedTask] = useState<Task | null>(null); 
   const menuBtnRef = useRef<HTMLButtonElement>(null);
 
   const deleteMutation = useMutation({
     mutationFn: async () => {
-      // Xóa tất cả task thuộc category này trước
-      // Virtual task thì xóa masterId, task thật thì xóa _id
       const idsToDelete = [
         ...new Set(
           tasks.map((t) =>
@@ -44,7 +46,6 @@ const CategoryCard = ({
         ),
       ];
       await Promise.all(idsToDelete.map((id) => taskApi.delete(id)));
-      // Sau đó mới xóa category
       return categoryApi.delete(category._id);
     },
     onSuccess: () => {
@@ -65,6 +66,7 @@ const CategoryCard = ({
     <>
       <div className="bg-[#EDE9FE] rounded-2xl p-4 flex flex-col gap-2 min-h-[180px]">
         {/* Header */}
+        {/* ... (Giữ nguyên phần Header và Dropdown menu) ... */}
         <div className="flex items-center justify-between mb-1">
           <div className="flex items-center gap-2 min-w-0">
             <div
@@ -93,7 +95,6 @@ const CategoryCard = ({
           </div>
         </div>
 
-        {/* Dropdown menu */}
         {showMenu && (
           <>
             <div
@@ -130,7 +131,7 @@ const CategoryCard = ({
         <TaskList
           tasks={tasks}
           dateStr={dateStr}
-          onTaskClick={(task) => setSelectedTask(task)}
+          onTaskClick={onTaskClick} // [SỬA Ở ĐÂY] Truyền thẳng prop này xuống
           onShowAll={() => setShowDetail(true)}
         />
 
@@ -140,32 +141,14 @@ const CategoryCard = ({
           className="flex items-center gap-1.5 text-xs text-[#8B5CF6] hover:text-[#7C3AED] mt-auto pt-1 mx-auto transition-colors"
         >
           <svg width="14" height="14" fill="none" viewBox="0 0 24 24">
-            <circle
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth="2"
-            />
-            <path
-              d="M12 8v8M8 12h8"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-            />
+            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
+            <path d="M12 8v8M8 12h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
           </svg>
           Thêm công việc
         </button>
       </div>
 
-      {/* Task detail modal */}
-      {selectedTask && (
-        <TaskDetail
-          task={selectedTask}
-          dateStr={dateStr}
-          onClose={() => setSelectedTask(null)}
-        />
-      )}
+      {/* [SỬA Ở ĐÂY] Xóa khối {selectedTask && <TaskDetail ... />} đi */}
 
       {/* Category detail modal - tất cả task */}
       {showDetail && (
