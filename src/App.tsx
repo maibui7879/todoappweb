@@ -8,6 +8,7 @@ import TasksPage from "./pages/tasks/TasksPage";
 import StarredPage from "./pages/starred/StarredPage";
 import StatsPage from "./pages/Stat/StatsPage";
 import OverduePage from "./pages/overdue/OverduePage";
+import NotificationsPage from "./pages/noti/notiPage";
 
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -39,10 +40,7 @@ function App() {
           <Route path="/overdue" element={<OverduePage />} />
           <Route path="/categories" element={<ComingSoon title="Danh mục" />} />
           <Route path="/stats" element={<StatsPage />} />
-          <Route
-            path="/notifications"
-            element={<ComingSoon title="Thông báo" />}
-          />
+          <Route path = "/notifications" element = {<NotificationsPage/>} /> 
         </Route>
       </Routes>
     </BrowserRouter>

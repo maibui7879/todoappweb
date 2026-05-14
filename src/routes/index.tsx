@@ -10,10 +10,10 @@ import RegisterPage from "../pages/auth/RegisterPage";
 import TasksPage from "../pages/tasks/TasksPage";
 import StarredPage from "../pages/starred/StarredPage";
 import OverduePage from "../pages/overdue/OverduePage";
-import CategoryDetailPage from "../pages/category/CategoryDetailPage";
-import StatsPage from "../pages/Stat/StatPage";
-import NotificationsPage from "../pages/noti/NotificationsPage";
-import ProfilePage from "../pages/auth/ProfilePage";
+// import CategoryDetailPage from "../pages/category/CategoryDetailPage";
+import StatsPage from "../pages/Stat/StatsPage";
+import NotificationsPage from "../pages/noti/notiPage";
+// import ProfilePage from "../pages/auth/ProfilePage";
 
 const AppRoutes = () => {
   return (
@@ -41,12 +41,12 @@ const AppRoutes = () => {
         <Route path="overdue" element={<OverduePage />} />
         
         {/* Route động cho danh mục */}
-        <Route path="category/:categoryId" element={<CategoryDetailPage />} />
+        {/* <Route path="category/:categoryId" element={<CategoryDetailPage />} /> */}
         
         {/* Các trang công cụ/cài đặt */}
         <Route path="stats" element={<StatsPage />} />
         <Route path="notifications" element={<NotificationsPage />} />
-        <Route path="profile" element={<ProfilePage />} />
+        {/* <Route path="profile" element={<ProfilePage />} /> */}
       </Route>
 
       {/* --- 404 NOT FOUND --- */}
