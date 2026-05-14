@@ -1,5 +1,7 @@
 // src/App.tsx
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { useAuth } from "./contexts/AuthContext";
 import LoginPage from "./pages/auth/LoginPage";
 import RegisterPage from "./pages/auth/RegisterPage";
@@ -43,6 +45,7 @@ function App() {
           <Route path = "/notifications" element = {<NotificationsPage/>} /> 
         </Route>
       </Routes>
+      <ToastContainer />
     </BrowserRouter>
   );
 }

@@ -134,7 +134,7 @@ const NotificationPopover = () => {
                       {noti.isImportant && (
                         <span className="text-[10px] bg-[#EDE9FE] text-[#7C3AED] px-2 py-0.5 rounded-md font-bold uppercase tracking-wider flex items-center gap-1 shadow-sm">
                           <span className="w-1 h-1 bg-[#7C3AED] rounded-full"></span>
-                          Ưu tiên cao
+                          Có gắn dấu sao
                         </span>
                       )}
                       {/* Logic hiển thị nhãn Sắp đến hạn dựa trên nội dung tin nhắn
