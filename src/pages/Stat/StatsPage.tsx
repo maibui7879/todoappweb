@@ -1,5 +1,5 @@
 // src/pages/Stats/StatsPage.tsx
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import { statsApi } from '../../api/stats.api';
 import type { OverviewStats, DetailedStats } from '../../types/stat.type';
