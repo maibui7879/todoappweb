@@ -73,7 +73,7 @@ const NotificationsPage = () => {
                 <BellOutlined className="text-2xl" />
               </div>
               <Title level={1} style={{ margin: 0 }} className="font-black text-gray-900">
-                Thông báo <Text className="text-violet-600 text-3xl font-black">({notifications.length})</Text>
+                Thông báo <Text className="text-violet-600 text-3xl font-black">({notifications.filter((n) => !n.isRead).length})</Text>
               </Title>
             </div>
             <Text className="text-gray-500 font-medium text-base">

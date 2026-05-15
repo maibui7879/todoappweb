@@ -56,13 +56,9 @@ const NotificationPopover = () => {
     ? notifications.filter(n => n.isImportant) 
     : notifications.slice(0, 50);
 
-  const displayNoti = (() => {
-    const deadlineIndex = filteredNoti.findIndex(n => n.message.toLowerCase().includes("đến hạn"));
-    if (deadlineIndex !== -1) {
-      return filteredNoti.filter((_, index) => index !== deadlineIndex);
-    }
-    return filteredNoti;
-  })();
+const displayNoti = onlyImportant 
+  ? notifications.filter(n => n.isImportant) 
+  : notifications; // Không nên slice ở đây nếu muốn thấy đủ
 
   return (
     <>

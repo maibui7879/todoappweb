@@ -22,7 +22,7 @@ const NotificationTable = ({ data, visibleColumns, onRead, onNavigate }: Props) 
       render: (isRead: boolean) => (
         isRead ? 
         <Tag color="default" className="rounded-full text-xs">Đã đọc</Tag> : 
-        <Badge status="processing" text={<Text strong className="text-blue-600 text-sm">Mới</Text>} />
+        <Badge status="processing" text={<Text strong className="text-violet-600 text-sm">Mới</Text>} />
       ),
     },
     {

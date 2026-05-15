@@ -1,5 +1,5 @@
 // src/contexts/AuthContext.tsx
-import React, { createContext, useState, useContext, useEffect } from "react";
+import { createContext, useState, useContext, useEffect } from "react";
 import { type ReactNode } from "react";
 import { type User } from "../types/user.type";
 
@@ -33,9 +33,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // Tự động kiểm tra Token khi lần đầu mở web
   useEffect(() => {
-    console.log('🔐 Kiểm tra Auth - Token:', !!token, 'User:', !!savedUser);
     if (!token) {
-      console.log('⚪ Không có token, set isLoading = false');
       setIsLoading(false);
       return;
     }

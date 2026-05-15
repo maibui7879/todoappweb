@@ -66,9 +66,9 @@ export const useNotification = () => {
       toast(`${newNotif.title}: ${newNotif.message}`, {
         type: newNotif.isImportant ? 'error' : 'info',
         position: 'bottom-right',
-        autoClose : 8000,
+        autoClose : 10000,
         style: {
-          background: newNotif.isImportant ? '#ffffff' : '#ffffff',
+          background: newNotif.isImportant ? '#ffe9fe' : '#e9dfff',
           color: newNotif.isImportant ? 'rgb(152, 46, 118)' : '#4b54b8',
           border: newNotif.isImportant ? '1px solid rgb(164, 0, 170)' : '1px solid #121a68',
         }
